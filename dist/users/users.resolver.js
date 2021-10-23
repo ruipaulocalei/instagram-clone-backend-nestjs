@@ -19,6 +19,7 @@ const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const users_model_1 = require("../models/users.model");
 const create_user_dto_1 = require("./dtos/create-user.dto");
+const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const see_profile_dto_1 = require("./dtos/see-profile.dto");
 const users_service_1 = require("./users.service");
@@ -37,6 +38,9 @@ let UsersResolver = class UsersResolver {
     }
     me(authUser) {
         return authUser;
+    }
+    async editProfile(authUser, { name, email, password, username }) {
+        return this.usersService.editProfile({ id: authUser.id }, { name, email, username, password });
     }
 };
 __decorate([
@@ -68,6 +72,15 @@ __decorate([
     __metadata("design:paramtypes", [users_model_1.UserModel]),
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "me", null);
+__decorate([
+    graphql_1.Mutation(() => edit_profile_dto_1.EditProfileOutput),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, auth_user_decorator_1.AuthUser()),
+    __param(1, graphql_1.Args('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel, edit_profile_dto_1.EditProfileInput]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "editProfile", null);
 UsersResolver = __decorate([
     graphql_1.Resolver(of => users_model_1.UserModel),
     __metadata("design:paramtypes", [users_service_1.UsersService])

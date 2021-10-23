@@ -8,6 +8,7 @@ import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { sign, verify } from 'jsonwebtoken'
 import { User } from '@prisma/client';
 import { UserModel } from 'src/models/users.model';
+import { EditProfileOutput } from './dtos/edit-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -116,5 +117,41 @@ export class UsersService {
         id
       }
     })
+  }
+
+  async editProfile({ id }: Prisma.UserWhereUniqueInput, {
+    email, name, password: newPassword, username,
+  }: Prisma.UserCreateInput): Promise<EditProfileOutput> {
+    try {
+      let hashedPassword = null
+      if (newPassword) {
+        hashedPassword = await hash(newPassword, 10)
+      }
+      const user = await this.prisma.user.update({
+        where: {
+          id
+        },
+        data: {
+          email,
+          name,
+          username,
+          ...(hashedPassword && { password: hashedPassword })
+        }
+      })
+      if (user.id) {
+        return {
+          ok: true,
+        }
+      }
+      return {
+        ok: false,
+        error: 'Erro ao actualizar o teu perfil',
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Ocorreu um erro inesperado. Tente novamente',
+      }
+    }
   }
 }

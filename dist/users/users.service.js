@@ -125,6 +125,37 @@ let UsersService = class UsersService {
             }
         });
     }
+    async editProfile({ id }, { email, name, password: newPassword, username, }) {
+        try {
+            let hashedPassword = null;
+            if (newPassword) {
+                hashedPassword = await bcrypt_1.hash(newPassword, 10);
+            }
+            const user = await this.prisma.user.update({
+                where: {
+                    id
+                },
+                data: Object.assign({ email,
+                    name,
+                    username }, (hashedPassword && { password: hashedPassword }))
+            });
+            if (user.id) {
+                return {
+                    ok: true,
+                };
+            }
+            return {
+                ok: false,
+                error: 'Erro ao actualizar o teu perfil',
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'Ocorreu um erro inesperado. Tente novamente',
+            };
+        }
+    }
 };
 UsersService = __decorate([
     common_1.Injectable(),
