@@ -13,7 +13,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersResolver = void 0;
+const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
+const auth_user_decorator_1 = require("../auth/auth-user.decorator");
+const auth_guard_1 = require("../auth/auth.guard");
 const users_model_1 = require("../models/users.model");
 const create_user_dto_1 = require("./dtos/create-user.dto");
 const login_dto_1 = require("./dtos/login.dto");
@@ -31,6 +34,9 @@ let UsersResolver = class UsersResolver {
     }
     async login({ username, password }) {
         return this.usersService.login({ username, password });
+    }
+    me(authUser) {
+        return authUser;
     }
 };
 __decorate([
@@ -54,6 +60,14 @@ __decorate([
     __metadata("design:paramtypes", [login_dto_1.LoginInputDto]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "login", null);
+__decorate([
+    graphql_1.Query(returns => users_model_1.UserModel),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "me", null);
 UsersResolver = __decorate([
     graphql_1.Resolver(of => users_model_1.UserModel),
     __metadata("design:paramtypes", [users_service_1.UsersService])

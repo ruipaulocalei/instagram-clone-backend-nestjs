@@ -1,4 +1,7 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { UseGuards } from "@nestjs/common";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { AuthUser } from "src/auth/auth-user.decorator";
+import { AuthGuard } from "src/auth/auth.guard";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { LoginInputDto, LoginOutputDto } from "./dtos/login.dto";
@@ -21,5 +24,11 @@ export class UsersResolver {
   @Mutation(() => LoginOutputDto)
   async login(@Args('input') { username, password }: LoginInputDto) {
     return this.usersService.login({ username, password })
+  }
+
+  @Query(returns => UserModel)
+  @UseGuards(AuthGuard)
+  me(@AuthUser() authUser: UserModel) {
+    return authUser
   }
 }

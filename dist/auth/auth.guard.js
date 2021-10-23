@@ -6,19 +6,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersModule = void 0;
+exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma.service");
-const jwt_middleware_1 = require("./jwt/jwt.middleware");
-const users_resolver_1 = require("./users.resolver");
-const users_service_1 = require("./users.service");
-let UsersModule = class UsersModule {
+const graphql_1 = require("@nestjs/graphql");
+let AuthGuard = class AuthGuard {
+    canActivate(context) {
+        const gqlContext = graphql_1.GqlExecutionContext.create(context).getContext();
+        const user = gqlContext['user'];
+        if (!user) {
+            return false;
+        }
+        return true;
+    }
 };
-UsersModule = __decorate([
-    common_1.Module({
-        providers: [users_service_1.UsersService, prisma_service_1.PrismaService, users_resolver_1.UsersResolver, jwt_middleware_1.JwtMiddleware],
-        exports: [users_service_1.UsersService]
-    })
-], UsersModule);
-exports.UsersModule = UsersModule;
-//# sourceMappingURL=users.module.js.map
+AuthGuard = __decorate([
+    common_1.Injectable()
+], AuthGuard);
+exports.AuthGuard = AuthGuard;
+//# sourceMappingURL=auth.guard.js.map

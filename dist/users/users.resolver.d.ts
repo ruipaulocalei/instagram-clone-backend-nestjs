@@ -1,3 +1,4 @@
+import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { LoginInputDto, LoginOutputDto } from "./dtos/login.dto";
 import { SeeProfileOutput } from "./dtos/see-profile.dto";
@@ -8,4 +9,5 @@ export declare class UsersResolver {
     createUser(data: CreateUserInput): Promise<CreateUserOutput>;
     seeProfile(username: string): Promise<SeeProfileOutput>;
     login({ username, password }: LoginInputDto): Promise<LoginOutputDto>;
+    me(authUser: UserModel): UserModel;
 }

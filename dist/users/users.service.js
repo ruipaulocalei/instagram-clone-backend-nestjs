@@ -15,6 +15,7 @@ const prisma_service_1 = require("../prisma.service");
 const bcrypt_1 = require("bcrypt");
 const client_1 = require("../../prisma/generated/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
+const users_model_1 = require("../models/users.model");
 let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -116,6 +117,13 @@ let UsersService = class UsersService {
                 error: 'An error occured'
             };
         }
+    }
+    async findById({ id }) {
+        return await this.prisma.user.findUnique({
+            where: {
+                id
+            }
+        });
     }
 };
 UsersService = __decorate([

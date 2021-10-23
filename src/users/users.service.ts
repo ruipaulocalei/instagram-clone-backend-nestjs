@@ -6,6 +6,8 @@ import { Prisma } from 'prisma/generated/client';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
 import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { sign, verify } from 'jsonwebtoken'
+import { User } from '@prisma/client';
+import { UserModel } from 'src/models/users.model';
 
 @Injectable()
 export class UsersService {
@@ -106,5 +108,13 @@ export class UsersService {
         error: 'An error occured'
       }
     }
+  }
+
+  async findById({ id }: Prisma.UserWhereUniqueInput): Promise<UserModel> {
+    return await this.prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
   }
 }
