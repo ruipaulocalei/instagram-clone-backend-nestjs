@@ -3,8 +3,9 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
 import { compare, hash } from 'bcrypt'
 import { Prisma } from 'prisma/generated/client';
-import { UserModel } from 'src/models/users.model';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
+import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
+import { sign, verify } from 'jsonwebtoken'
 
 @Injectable()
 export class UsersService {
@@ -70,6 +71,39 @@ export class UsersService {
       return {
         ok: false,
         error: 'An error occured.'
+      }
+    }
+  }
+
+  async login({ username, password }: LoginInputDto): Promise<LoginOutputDto> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          username
+        }
+      })
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User does not exists'
+        }
+      }
+      const passwordDb = await compare(password, user.password)
+      if (!passwordDb) {
+        return {
+          ok: false,
+          error: 'Password wrong'
+        }
+      }
+      const token = sign({ id: user.id }, 'jhghfvtygh57yghbvrdtugh76ugvhft6')
+      return {
+        ok: true,
+        token
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'An error occured'
       }
     }
   }

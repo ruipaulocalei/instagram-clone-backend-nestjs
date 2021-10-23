@@ -14,7 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const bcrypt_1 = require("bcrypt");
 const client_1 = require("../../prisma/generated/client");
-const users_model_1 = require("../models/users.model");
+const jsonwebtoken_1 = require("jsonwebtoken");
 let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -81,6 +81,39 @@ let UsersService = class UsersService {
             return {
                 ok: false,
                 error: 'An error occured.'
+            };
+        }
+    }
+    async login({ username, password }) {
+        try {
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    username
+                }
+            });
+            if (!user) {
+                return {
+                    ok: false,
+                    error: 'User does not exists'
+                };
+            }
+            const passwordDb = await bcrypt_1.compare(password, user.password);
+            if (!passwordDb) {
+                return {
+                    ok: false,
+                    error: 'Password wrong'
+                };
+            }
+            const token = jsonwebtoken_1.sign({ id: user.id }, 'jhghfvtygh57yghbvrdtugh76ugvhft6');
+            return {
+                ok: true,
+                token
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An error occured'
             };
         }
     }
