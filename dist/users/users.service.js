@@ -13,6 +13,8 @@ exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const bcrypt_1 = require("bcrypt");
+const client_1 = require("../../prisma/generated/client");
+const users_model_1 = require("../models/users.model");
 let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -54,6 +56,31 @@ let UsersService = class UsersService {
             return {
                 ok: false,
                 error: 'An error occured. Try again...'
+            };
+        }
+    }
+    async seeProfile({ username }) {
+        try {
+            const userExists = await this.prisma.user.findUnique({
+                where: {
+                    username
+                },
+            });
+            if (!userExists) {
+                return {
+                    ok: false,
+                    error: 'This user does not exist.'
+                };
+            }
+            return {
+                ok: true,
+                profile: userExists
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An error occured.'
             };
         }
     }
