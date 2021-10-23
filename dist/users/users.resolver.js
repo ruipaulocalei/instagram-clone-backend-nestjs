@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
+const output_dto_1 = require("../common/dtos/output.dto");
 const users_model_1 = require("../models/users.model");
 const create_user_dto_1 = require("./dtos/create-user.dto");
 const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
@@ -45,6 +46,9 @@ let UsersResolver = class UsersResolver {
     }
     async followUser(authUser, { username }) {
         return this.usersService.followUser(authUser.id, { username });
+    }
+    async unfollowUser(authUser, { username }) {
+        return this.usersService.unfollowUser(authUser.id, { username });
     }
 };
 __decorate([
@@ -86,7 +90,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "editProfile", null);
 __decorate([
-    graphql_1.Mutation(() => edit_profile_dto_1.EditProfileOutput),
+    graphql_1.Mutation(() => output_dto_1.OutputDto),
     common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, auth_user_decorator_1.AuthUser()),
     __param(1, graphql_1.Args('input')),
@@ -94,6 +98,15 @@ __decorate([
     __metadata("design:paramtypes", [users_model_1.UserModel, follow_user_dto_1.FollowUserInput]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "followUser", null);
+__decorate([
+    graphql_1.Mutation(() => output_dto_1.OutputDto),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, auth_user_decorator_1.AuthUser()),
+    __param(1, graphql_1.Args('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel, follow_user_dto_1.FollowUserInput]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "unfollowUser", null);
 UsersResolver = __decorate([
     graphql_1.Resolver(of => users_model_1.UserModel),
     __metadata("design:paramtypes", [users_service_1.UsersService])

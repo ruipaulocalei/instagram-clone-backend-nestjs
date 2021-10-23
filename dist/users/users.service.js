@@ -193,6 +193,38 @@ let UsersService = class UsersService {
             };
         }
     }
+    async unfollowUser(id, { username }) {
+        try {
+            const user = await this.prisma.user.findUnique({ where: { username } });
+            if (!user) {
+                return {
+                    ok: false,
+                    error: 'This user does not exists'
+                };
+            }
+            await this.prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    following: {
+                        disconnect: {
+                            username
+                        }
+                    }
+                }
+            });
+            return {
+                ok: true
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An error occured. Try again!...'
+            };
+        }
+    }
 };
 UsersService = __decorate([
     common_1.Injectable(),

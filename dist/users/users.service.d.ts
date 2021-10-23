@@ -15,4 +15,5 @@ export declare class UsersService {
     findById({ id }: Prisma.UserWhereUniqueInput): Promise<UserModel>;
     editProfile({ id }: Prisma.UserWhereUniqueInput, { email, name, password: newPassword, username }: Prisma.UserCreateInput): Promise<EditProfileOutput>;
     followUser(id: string, { username }: Prisma.UserWhereUniqueInput): Promise<OutputDto>;
+    unfollowUser(id: string, { username }: Prisma.UserWhereUniqueInput): Promise<OutputDto>;
 }

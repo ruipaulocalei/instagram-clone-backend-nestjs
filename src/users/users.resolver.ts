@@ -2,6 +2,7 @@ import { UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
+import { OutputDto } from "src/common/dtos/output.dto";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
@@ -40,9 +41,15 @@ export class UsersResolver {
     return this.usersService.editProfile({ id: authUser.id }, { name, email, username, password })
   }
 
-  @Mutation(() => EditProfileOutput)
+  @Mutation(() => OutputDto)
   @UseGuards(AuthGuard)
   async followUser(@AuthUser() authUser: UserModel, @Args('input') { username }: FollowUserInput) {
     return this.usersService.followUser(authUser.id, { username })
+  }
+
+  @Mutation(() => OutputDto)
+  @UseGuards(AuthGuard)
+  async unfollowUser(@AuthUser() authUser: UserModel, @Args('input') { username }: FollowUserInput) {
+    return this.usersService.unfollowUser(authUser.id, { username })
   }
 }

@@ -1,3 +1,4 @@
+import { OutputDto } from "src/common/dtos/output.dto";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
@@ -13,5 +14,6 @@ export declare class UsersResolver {
     login({ username, password }: LoginInputDto): Promise<LoginOutputDto>;
     me(authUser: UserModel): UserModel;
     editProfile(authUser: UserModel, { name, email, password, username }: EditProfileInput): Promise<EditProfileOutput>;
-    followUser(authUser: UserModel, { username }: FollowUserInput): Promise<import("../common/dtos/output.dto").OutputDto>;
+    followUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
+    unfollowUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
 }
