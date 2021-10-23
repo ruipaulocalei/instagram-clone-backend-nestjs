@@ -16,6 +16,7 @@ const bcrypt_1 = require("bcrypt");
 const client_1 = require("../../prisma/generated/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const users_model_1 = require("../models/users.model");
+const output_dto_1 = require("../common/dtos/output.dto");
 let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -66,6 +67,10 @@ let UsersService = class UsersService {
                 where: {
                     username
                 },
+                include: {
+                    followers: true,
+                    following: true
+                }
             });
             if (!userExists) {
                 return {
@@ -125,7 +130,7 @@ let UsersService = class UsersService {
             }
         });
     }
-    async editProfile({ id }, { email, name, password: newPassword, username, }) {
+    async editProfile({ id }, { email, name, password: newPassword, username }) {
         try {
             let hashedPassword = null;
             if (newPassword) {
@@ -153,6 +158,38 @@ let UsersService = class UsersService {
             return {
                 ok: false,
                 error: 'Ocorreu um erro inesperado. Tente novamente',
+            };
+        }
+    }
+    async followUser(id, { username }) {
+        try {
+            const user = await this.prisma.user.findUnique({ where: { username } });
+            if (!user) {
+                return {
+                    ok: false,
+                    error: 'This user does not exists'
+                };
+            }
+            await this.prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    following: {
+                        connect: {
+                            username
+                        }
+                    }
+                }
+            });
+            return {
+                ok: true
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An error occured. Try again!...'
             };
         }
     }

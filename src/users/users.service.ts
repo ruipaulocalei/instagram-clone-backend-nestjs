@@ -9,6 +9,8 @@ import { sign, verify } from 'jsonwebtoken'
 import { User } from '@prisma/client';
 import { UserModel } from 'src/models/users.model';
 import { EditProfileOutput } from './dtos/edit-profile.dto';
+import { OutputDto } from 'src/common/dtos/output.dto';
+import { FollowUserInput } from './dtos/follow-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -59,6 +61,10 @@ export class UsersService {
         where: {
           username
         },
+        include: {
+          followers: true,
+          following: true
+        }
       })
       if (!userExists) {
         return {
@@ -120,7 +126,7 @@ export class UsersService {
   }
 
   async editProfile({ id }: Prisma.UserWhereUniqueInput, {
-    email, name, password: newPassword, username,
+    email, name, password: newPassword, username
   }: Prisma.UserCreateInput): Promise<EditProfileOutput> {
     try {
       let hashedPassword = null
@@ -151,6 +157,38 @@ export class UsersService {
       return {
         ok: false,
         error: 'Ocorreu um erro inesperado. Tente novamente',
+      }
+    }
+  }
+
+  async followUser(id: string, { username }: Prisma.UserWhereUniqueInput): Promise<OutputDto> {
+    try {
+      const user = await this.prisma.user.findUnique({ where: { username } })
+      if (!user) {
+        return {
+          ok: false,
+          error: 'This user does not exists'
+        }
+      }
+      await this.prisma.user.update({
+        where: {
+          id
+        },
+        data: {
+          following: {
+            connect: {
+              username
+            }
+          }
+        }
+      })
+      return {
+        ok: true
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'An error occured. Try again!...'
       }
     }
   }

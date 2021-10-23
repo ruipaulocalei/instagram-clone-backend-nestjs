@@ -13,6 +13,14 @@ export class UserModel {
   email: string
   @Field(type => String)
   password: string
+  @Field(type => String, { nullable: true })
+  bio?: string
+  @Field(type => String, { nullable: true })
+  avatar?: string
+  @Field(type => [UserModel], { nullable: true })
+  following?: UserModel[]
+  @Field(type => [UserModel], { nullable: true })
+  followers?: UserModel[]
   @Field(type => Date)
   createdAt: Date
   @Field(type => Date)

@@ -11,12 +11,12 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 2.28.0
- * Query Engine version: 89facabd0366f63911d089156a7a70125bfbcd27
+ * Prisma Client JS version: 3.3.0
+ * Query Engine version: 33838b0f78f1fe9052cf9a00e9761c9dc097a63c
  */
 Prisma.prismaVersion = {
-  client: "2.28.0",
-  engine: "89facabd0366f63911d089156a7a70125bfbcd27"
+  client: "3.3.0",
+  engine: "33838b0f78f1fe9052cf9a00e9761c9dc097a63c"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -44,7 +44,6 @@ Prisma.Decimal = Decimal
 /**
  * Re-export of sql-template-tag
  */
-
 Prisma.sql = () => {
   throw new Error(`sqltag is unable to be run in the browser.
 In case this error is unexpected for you, please report it in https://github.com/prisma/prisma/issues`,
@@ -64,6 +63,13 @@ In case this error is unexpected for you, please report it in https://github.com
 Prisma.validator = () => (val) => val
 
 /**
+ * Shorthand utilities for JSON filtering
+ */
+Prisma.DbNull = 'DbNull'
+Prisma.JsonNull = 'JsonNull'
+Prisma.AnyNull = 'AnyNull'
+
+/**
  * Enums
  */
 // Based on
@@ -76,6 +82,8 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
   username: 'username',
   email: 'email',
   password: 'password',
+  bio: 'bio',
+  avatar: 'avatar',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });

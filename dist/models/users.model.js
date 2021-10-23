@@ -8,10 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var UserModel_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
 const graphql_1 = require("@nestjs/graphql");
-let UserModel = class UserModel {
+let UserModel = UserModel_1 = class UserModel {
 };
 __decorate([
     graphql_1.Field(type => String),
@@ -34,6 +35,22 @@ __decorate([
     __metadata("design:type", String)
 ], UserModel.prototype, "password", void 0);
 __decorate([
+    graphql_1.Field(type => String, { nullable: true }),
+    __metadata("design:type", String)
+], UserModel.prototype, "bio", void 0);
+__decorate([
+    graphql_1.Field(type => String, { nullable: true }),
+    __metadata("design:type", String)
+], UserModel.prototype, "avatar", void 0);
+__decorate([
+    graphql_1.Field(type => [UserModel_1], { nullable: true }),
+    __metadata("design:type", Array)
+], UserModel.prototype, "following", void 0);
+__decorate([
+    graphql_1.Field(type => [UserModel_1], { nullable: true }),
+    __metadata("design:type", Array)
+], UserModel.prototype, "followers", void 0);
+__decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)
 ], UserModel.prototype, "createdAt", void 0);
@@ -41,7 +58,7 @@ __decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)
 ], UserModel.prototype, "updatedAt", void 0);
-UserModel = __decorate([
+UserModel = UserModel_1 = __decorate([
     graphql_1.InputType({ isAbstract: true }),
     graphql_1.ObjectType()
 ], UserModel);

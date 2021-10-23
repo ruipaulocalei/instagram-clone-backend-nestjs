@@ -10,7 +10,7 @@ exports.EditProfileOutput = exports.EditProfileInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const output_dto_1 = require("../../common/dtos/output.dto");
 const users_model_1 = require("../../models/users.model");
-let EditProfileInput = class EditProfileInput extends graphql_1.PartialType(graphql_1.PickType(users_model_1.UserModel, ['name', 'email', 'password', 'username'])) {
+let EditProfileInput = class EditProfileInput extends graphql_1.PartialType(graphql_1.PickType(users_model_1.UserModel, ['name', 'email', 'password', 'username', 'avatar', 'bio'])) {
 };
 EditProfileInput = __decorate([
     graphql_1.InputType()
