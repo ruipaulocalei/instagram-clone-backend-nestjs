@@ -17,6 +17,7 @@ const client_1 = require("../../prisma/generated/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const users_model_1 = require("../models/users.model");
 const output_dto_1 = require("../common/dtos/output.dto");
+const rooms_model_1 = require("../models/rooms.model");
 let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -124,11 +125,38 @@ let UsersService = class UsersService {
         }
     }
     async findById({ id }) {
-        return await this.prisma.user.findUnique({
-            where: {
-                id
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id
+                },
+            });
+            if (!user) {
+                return {
+                    ok: false,
+                    error: 'Utilizador não encontrado'
+                };
             }
-        });
+            return {
+                ok: true,
+                user
+            };
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async me({ id }) {
+        try {
+            const owner = await this.prisma.user.findUnique({
+                where: {
+                    id
+                }
+            });
+            return owner;
+        }
+        catch (error) {
+        }
     }
     async editProfile({ id }, { email, name, password: newPassword, username }) {
         try {
@@ -222,6 +250,130 @@ let UsersService = class UsersService {
             return {
                 ok: false,
                 error: 'An error occured. Try again!...'
+            };
+        }
+    }
+    totalFollowers({ id }) {
+        return this.prisma.user.count({
+            where: {
+                following: {
+                    some: {
+                        id
+                    }
+                }
+            }
+        });
+    }
+    totalFollowing({ id }) {
+        return this.prisma.user.count({
+            where: {
+                followers: {
+                    some: {
+                        id
+                    }
+                }
+            }
+        });
+    }
+    async seeRooms({ id }) {
+        const room = await this.prisma.room.findMany({
+            where: {
+                users: {
+                    some: {
+                        id
+                    }
+                }
+            },
+            include: {
+                messages: true
+            }
+        });
+        console.log(room.map(r => r.id));
+        return room;
+    }
+    async sendMessage({ payload, roomId, userId }, { id }) {
+        try {
+            let room = null;
+            if (roomId) {
+                room = await this.prisma.room.findUnique({
+                    where: {
+                        id: roomId
+                    }, select: {
+                        id: true
+                    }
+                });
+                if (!room) {
+                    return {
+                        ok: false,
+                        error: 'Room not found'
+                    };
+                }
+            }
+            else if (userId) {
+                const userFind = await this.prisma.user.findUnique({
+                    where: {
+                        id: userId
+                    }
+                });
+                if (!userFind) {
+                    return {
+                        ok: false,
+                        error: 'User not found'
+                    };
+                }
+                const newRoom = await this.prisma.room.create({
+                    data: {
+                        users: {
+                            connect: [
+                                {
+                                    id: userId
+                                },
+                                {
+                                    id
+                                }
+                            ]
+                        }
+                    }
+                });
+                room = await this.prisma.message.create({
+                    data: {
+                        payload,
+                        room: {
+                            connect: {
+                                id: newRoom.id
+                            }
+                        },
+                        user: {
+                            connect: {
+                                id
+                            }
+                        }
+                    }
+                });
+            }
+            await this.prisma.message.create({
+                data: {
+                    payload,
+                    room: {
+                        connect: {
+                            id: room.id
+                        }
+                    },
+                    user: {
+                        connect: {
+                            id
+                        }
+                    }
+                }
+            });
+            return {
+                ok: true,
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'Ocorreu um erro inesperado ' + error
             };
         }
     }

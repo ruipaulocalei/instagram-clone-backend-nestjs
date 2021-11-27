@@ -15,16 +15,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersResolver = void 0;
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
+const apollo_server_express_1 = require("apollo-server-express");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const output_dto_1 = require("../common/dtos/output.dto");
+const rooms_model_1 = require("../models/rooms.model");
 const users_model_1 = require("../models/users.model");
 const create_user_dto_1 = require("./dtos/create-user.dto");
 const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
 const follow_user_dto_1 = require("./dtos/follow-user.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const see_profile_dto_1 = require("./dtos/see-profile.dto");
+const send_message_dto_1 = require("./dtos/send-message.dto");
 const users_service_1 = require("./users.service");
+const pubsub = new apollo_server_express_1.PubSub();
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
         this.usersService = usersService;
@@ -47,8 +51,39 @@ let UsersResolver = class UsersResolver {
     async followUser(authUser, { username }) {
         return this.usersService.followUser(authUser.id, { username });
     }
+    totalFollowing(user) {
+        return this.usersService.totalFollowing(user);
+    }
+    isFollowing(user) {
+        return false;
+    }
+    isMe({ id }, authUser) {
+        if (!authUser) {
+            return false;
+        }
+        return id === authUser.id;
+    }
+    totalFollowers(user) {
+        return this.usersService.totalFollowers(user);
+    }
     async unfollowUser(authUser, { username }) {
         return this.usersService.unfollowUser(authUser.id, { username });
+    }
+    async seeRooms(authUser) {
+        return this.usersService.seeRooms(authUser);
+    }
+    async myProfile(authUser) {
+        return this.usersService.me(authUser);
+    }
+    async sendMessage({ payload, roomId, userId }, authUser) {
+        return this.usersService.sendMessage({ payload, roomId, userId }, authUser);
+    }
+    ready() {
+        pubsub.publish('New_Message', { messageUpdate: 'Its ready RPC' });
+    }
+    messageUpdate(user) {
+        console.log(user);
+        return pubsub.asyncIterator('New_Message');
     }
 };
 __decorate([
@@ -60,6 +95,7 @@ __decorate([
 ], UsersResolver.prototype, "createUser", null);
 __decorate([
     graphql_1.Query(returns => see_profile_dto_1.SeeProfileOutput),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, graphql_1.Args('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -73,8 +109,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "login", null);
 __decorate([
-    graphql_1.Query(returns => users_model_1.UserModel),
     common_1.UseGuards(auth_guard_1.AuthGuard),
+    graphql_1.Query(returns => users_model_1.UserModel),
     __param(0, auth_user_decorator_1.AuthUser()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [users_model_1.UserModel]),
@@ -99,6 +135,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "followUser", null);
 __decorate([
+    graphql_1.ResolveField(type => Number),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "totalFollowing", null);
+__decorate([
+    graphql_1.ResolveField(type => Boolean),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", Boolean)
+], UsersResolver.prototype, "isFollowing", null);
+__decorate([
+    graphql_1.ResolveField(type => Boolean),
+    __param(0, graphql_1.Parent()),
+    __param(1, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel, users_model_1.UserModel]),
+    __metadata("design:returntype", Boolean)
+], UsersResolver.prototype, "isMe", null);
+__decorate([
+    graphql_1.ResolveField(type => Number),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "totalFollowers", null);
+__decorate([
     graphql_1.Mutation(() => output_dto_1.OutputDto),
     common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, auth_user_decorator_1.AuthUser()),
@@ -107,6 +172,44 @@ __decorate([
     __metadata("design:paramtypes", [users_model_1.UserModel, follow_user_dto_1.FollowUserInput]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "unfollowUser", null);
+__decorate([
+    graphql_1.Query(() => rooms_model_1.RoomModel),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "seeRooms", null);
+__decorate([
+    graphql_1.Query(() => users_model_1.UserModel),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "myProfile", null);
+__decorate([
+    graphql_1.Mutation(() => output_dto_1.OutputDto),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, graphql_1.Args('input')),
+    __param(1, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [send_message_dto_1.SendMessageInput, users_model_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "sendMessage", null);
+__decorate([
+    graphql_1.Mutation(returns => Boolean),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "ready", null);
+__decorate([
+    graphql_1.Subscription(returns => String),
+    __param(0, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "messageUpdate", null);
 UsersResolver = __decorate([
     graphql_1.Resolver(of => users_model_1.UserModel),
     __metadata("design:paramtypes", [users_service_1.UsersService])

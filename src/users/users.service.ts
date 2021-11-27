@@ -2,15 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
 import { compare, hash } from 'bcrypt'
-import { Prisma } from 'prisma/generated/client';
+import { Prisma, Room, User } from 'prisma/generated/client';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
 import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { sign, verify } from 'jsonwebtoken'
-import { User } from '@prisma/client';
+// import { Prisma, User } from '@prisma/client';
 import { UserModel } from 'src/models/users.model';
 import { EditProfileOutput } from './dtos/edit-profile.dto';
 import { OutputDto } from 'src/common/dtos/output.dto';
 import { FollowUserInput } from './dtos/follow-user.dto';
+import { RoomModel } from 'src/models/rooms.model';
+import { SendMessageInput, SendMessageOutput } from './dtos/send-message.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -117,12 +120,39 @@ export class UsersService {
     }
   }
 
-  async findById({ id }: Prisma.UserWhereUniqueInput): Promise<UserModel> {
-    return await this.prisma.user.findUnique({
-      where: {
-        id
+  async findById({ id }: Prisma.UserWhereUniqueInput): Promise<UserProfileOutput> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id
+        },
+      })
+      if (!user) {
+        return {
+          ok: false,
+          error: 'Utilizador não encontrado'
+        }
       }
-    })
+      return {
+        ok: true,
+        user
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async me({ id }: Prisma.UserWhereUniqueInput): Promise<User> {
+    try {
+      const owner = await this.prisma.user.findUnique({
+        where: {
+          id
+        }
+      })
+      return owner
+    } catch (error) {
+
+    }
   }
 
   async editProfile({ id }: Prisma.UserWhereUniqueInput, {
@@ -221,6 +251,136 @@ export class UsersService {
       return {
         ok: false,
         error: 'An error occured. Try again!...'
+      }
+    }
+  }
+
+  totalFollowers({ id }: Prisma.UserWhereUniqueInput): Promise<number> {
+    return this.prisma.user.count({
+      where: {
+        following: {
+          some: {
+            id
+          }
+        }
+      }
+    })
+  }
+
+  totalFollowing({ id }: UserModel): Promise<number> {
+    return this.prisma.user.count({
+      where: {
+        followers: {
+          some: {
+            id
+          }
+        }
+      }
+    })
+  }
+
+  async seeRooms({ id }: UserModel): Promise<RoomModel[] | null> {
+    const room = await this.prisma.room.findMany({
+      where: {
+        users: {
+          some: {
+            id
+          }
+        }
+      },
+      include: {
+        messages: true
+      }
+    })
+    console.log(room.map(r => r.id))
+    return room
+  }
+
+  async sendMessage({ payload, roomId, userId }: SendMessageInput,
+    { id }: Prisma.UserWhereUniqueInput): Promise<SendMessageOutput> {
+    try {
+      let room = null
+      if (roomId) {
+        room = await this.prisma.room.findUnique({
+          where: {
+            id: roomId
+          }, select: {
+            id: true
+          }
+        })
+        if (!room) {
+          return {
+            ok: false,
+            error: 'Room not found'
+          }
+        }
+      }
+
+      else if (userId) {
+        const userFind = await this.prisma.user.findUnique({
+          where: {
+            id: userId
+          }
+        })
+        if (!userFind) {
+          return {
+            ok: false,
+            error: 'User not found'
+          }
+        }
+        const newRoom = await this.prisma.room.create({
+          data: {
+            users: {
+              connect: [
+                {
+                  id: userId
+                },
+                {
+                  id
+                }
+              ]
+            }
+          }
+        })
+        room = await this.prisma.message.create({
+          data: {
+            payload,
+            room: {
+              connect: {
+                id: newRoom.id
+              }
+            },
+            user: {
+              connect: {
+                id
+              }
+            }
+          }
+        })
+      }
+
+      await this.prisma.message.create({
+        data: {
+          payload,
+          room: {
+            connect: {
+              id: room.id
+            }
+          },
+          user: {
+            connect: {
+              id
+            }
+          }
+        }
+      })
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Ocorreu um erro inesperado ' + error
       }
     }
   }

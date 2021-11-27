@@ -1,10 +1,12 @@
 import { OutputDto } from "src/common/dtos/output.dto";
+import { RoomModel } from "src/models/rooms.model";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { FollowUserInput } from "./dtos/follow-user.dto";
 import { LoginInputDto, LoginOutputDto } from "./dtos/login.dto";
 import { SeeProfileOutput } from "./dtos/see-profile.dto";
+import { SendMessageInput } from "./dtos/send-message.dto";
 import { UsersService } from "./users.service";
 export declare class UsersResolver {
     private readonly usersService;
@@ -15,5 +17,14 @@ export declare class UsersResolver {
     me(authUser: UserModel): UserModel;
     editProfile(authUser: UserModel, { name, email, password, username }: EditProfileInput): Promise<EditProfileOutput>;
     followUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
+    totalFollowing(user: UserModel): Promise<number>;
+    isFollowing(user: UserModel): boolean;
+    isMe({ id }: UserModel, authUser: UserModel): boolean;
+    totalFollowers(user: UserModel): Promise<number>;
     unfollowUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
+    seeRooms(authUser: UserModel): Promise<RoomModel[]>;
+    myProfile(authUser: UserModel): Promise<import("../../prisma/generated/client").User>;
+    sendMessage({ payload, roomId, userId }: SendMessageInput, authUser: UserModel): Promise<import("./dtos/send-message.dto").SendMessageOutput>;
+    ready(): void;
+    messageUpdate(user: UserModel): AsyncIterator<unknown, any, undefined>;
 }

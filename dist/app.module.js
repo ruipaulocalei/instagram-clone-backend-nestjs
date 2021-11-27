@@ -11,26 +11,25 @@ const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
-const jwt_middleware_1 = require("./users/jwt/jwt.middleware");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
+const photos_module_1 = require("./photos/photos.module");
 let AppModule = class AppModule {
-    configure(consumer) {
-        consumer.apply(jwt_middleware_1.JwtMiddleware).forRoutes({
-            path: '/graphql',
-            method: common_1.RequestMethod.ALL
-        });
-    }
 };
 AppModule = __decorate([
     common_1.Module({
         imports: [
             graphql_1.GraphQLModule.forRoot({
+                installSubscriptionHandlers: true,
                 autoSchemaFile: true,
-                context: ({ req }) => ({ user: req['user'] })
+                context: ({ req, connection }) => {
+                    const TOKEN_KEY = 'jwt-token';
+                    return { token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY] };
+                }
             }),
             users_module_1.UsersModule,
             auth_module_1.AuthModule,
+            photos_module_1.PhotosModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

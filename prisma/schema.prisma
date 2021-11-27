@@ -8,19 +8,51 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output = "./generated/client"
+  output   = "./generated/client"
 }
 
 model User {
-  id String @default(uuid()) @id
-  name String
-  username String @unique
-  email String @unique
-  password String
-  bio String?
-  avatar String?
-  followers User[] @relation("FollowRelation", references: [id])
-  following User[] @relation("FollowRelation", references: [id])
+  id        String    @id @default(uuid())
+  name      String
+  username  String    @unique
+  email     String    @unique
+  password  String
+  bio       String?
+  avatar    String?
+  followers User[]    @relation("FollowRelation", references: [id])
+  following User[]    @relation("FollowRelation", references: [id])
+  message   Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  rooms     Room[]
+  photos    Photo[]
+}
+
+model Photo {
+  id        String   @id @default(uuid())
+  file      String
+  caption   String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id        String    @id @default(uuid())
+  users     User[]
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  payload   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  roomId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
