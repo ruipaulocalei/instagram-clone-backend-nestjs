@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
+import { PhotoModel } from "./photos.model";
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -21,6 +22,8 @@ export class UserModel {
   following?: UserModel[]
   @Field(type => [UserModel], { nullable: true })
   followers?: UserModel[]
+  @Field(type => [PhotoModel], { nullable: true })
+  photos?: PhotoModel[]
   @Field(type => Date)
   createdAt: Date
   @Field(type => Date)

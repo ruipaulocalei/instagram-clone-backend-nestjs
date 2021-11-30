@@ -7,7 +7,7 @@ import { UserModel } from "./users.model";
 export class RoomModel {
   @Field(type => String)
   id: string
-  @Field(type => [MessageModel,], { nullable: true })
+  @Field(type => [MessageModel], { nullable: true })
   messages?: MessageModel[]
   @Field(type => [UserModel,], { nullable: true })
   users?: UserModel[]

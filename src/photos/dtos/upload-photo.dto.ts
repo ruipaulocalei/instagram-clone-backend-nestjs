@@ -1,4 +1,5 @@
-import { InputType, ObjectType, PickType } from "@nestjs/graphql";
+import { Field, InputType, ObjectType, PickType } from "@nestjs/graphql";
+import { Photo } from "prisma/generated/client";
 import { OutputDto } from "src/common/dtos/output.dto";
 import { PhotoModel } from "src/models/photos.model";
 
@@ -6,4 +7,7 @@ import { PhotoModel } from "src/models/photos.model";
 export class CreatePhotoInput extends PickType(PhotoModel, ['caption', 'file']) { }
 
 @ObjectType()
-export class CreatePhotoOutput extends OutputDto { }
+export class CreatePhotoOutput extends OutputDto {
+  @Field(type => [PhotoModel], { nullable: true })
+  photos?: Photo[]
+}

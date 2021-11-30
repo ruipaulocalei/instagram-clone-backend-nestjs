@@ -1,9 +1,12 @@
-import { UseGuards } from "@nestjs/common";
+import { Inject, UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
+import { Prisma } from "@prisma/client";
 import { PubSub } from "apollo-server-express";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
+import { NEW_MESSAGE, PUB_SUB } from "src/common/constants";
 import { OutputDto } from "src/common/dtos/output.dto";
+import { MessageModel } from "src/models/message.model";
 import { RoomModel } from "src/models/rooms.model";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
@@ -15,10 +18,12 @@ import { SeeProfileOutput } from "./dtos/see-profile.dto";
 import { SendMessageInput } from "./dtos/send-message.dto";
 import { UsersService } from "./users.service";
 
-const pubsub = new PubSub()
+// const pubsub = new PubSub()
 @Resolver(of => UserModel)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub
+  ) { }
   @Mutation(() => CreateUserOutput)
   async createUser(@Args('input') data: CreateUserInput) {
     return this.usersService.createUser(data)
@@ -59,8 +64,8 @@ export class UsersResolver {
   }
 
   @ResolveField(type => Boolean)
-  isFollowing(@Parent() user: UserModel): boolean {
-    return false
+  isFollowing(@Parent() user: UserModel, @AuthUser() authUser: UserModel) {
+    return this.usersService.isFollowing(user, authUser)
   }
 
   @ResolveField(type => Boolean)
@@ -76,13 +81,18 @@ export class UsersResolver {
     return this.usersService.totalFollowers(user)
   }
 
+  @ResolveField(type => Number)
+  totalPublish(@Parent() user: UserModel) {
+    return this.usersService.totalPublish(user)
+  }
+
   @Mutation(() => OutputDto)
   @UseGuards(AuthGuard)
   async unfollowUser(@AuthUser() authUser: UserModel, @Args('input') { username }: FollowUserInput) {
     return this.usersService.unfollowUser(authUser.id, { username })
   }
 
-  @Query(() => RoomModel)
+  @Query(() => [RoomModel])
   @UseGuards(AuthGuard)
   async seeRooms(@AuthUser() authUser: UserModel) {
     return this.usersService.seeRooms(authUser)
@@ -94,21 +104,29 @@ export class UsersResolver {
     return this.usersService.me(authUser)
   }
 
+  @Mutation(returns => Boolean)
+  ready(@Args('roomId') roomId: string) {
+    this.pubSub.publish('New_Message', { messageUpdate: roomId })
+    return true
+  }
+
   @Mutation(() => OutputDto)
   @UseGuards(AuthGuard)
-  async sendMessage(@Args('input') { payload, roomId, userId }: SendMessageInput, @AuthUser() authUser: UserModel) {
+  async sendMessage(@Args('input') { payload, roomId, userId }: SendMessageInput,
+    @AuthUser() authUser: UserModel) {
     return this.usersService.sendMessage({ payload, roomId, userId }, authUser)
   }
 
-  @Mutation(returns => Boolean)
-  ready() {
-    pubsub.publish('New_Message', { messageUpdate: 'Its ready RPC' })
-  }
-
-  @Subscription(returns => String)
-  messageUpdate(@AuthUser() user: UserModel) {
-    console.log(user)
-    return pubsub.asyncIterator('New_Message')
+  @Subscription(returns => MessageModel, {
+    filter: ({ messageUpdate }, { roomId }, { user }) => {
+      console.log(messageUpdate, roomId, user)
+      return messageUpdate.roomId === roomId
+    }
+  })
+  @UseGuards(AuthGuard)
+  messageUpdate(@Args('roomId') roomId: string) {
+    // console.log(user)
+    return this.pubSub.asyncIterator(NEW_MESSAGE)
   }
 
 }

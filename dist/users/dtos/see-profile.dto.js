@@ -17,7 +17,7 @@ let SeeProfileOutput = class SeeProfileOutput extends output_dto_1.OutputDto {
 };
 __decorate([
     graphql_1.Field(type => users_model_1.UserModel, { nullable: true }),
-    __metadata("design:type", users_model_1.UserModel)
+    __metadata("design:type", Object)
 ], SeeProfileOutput.prototype, "profile", void 0);
 SeeProfileOutput = __decorate([
     graphql_1.ObjectType()

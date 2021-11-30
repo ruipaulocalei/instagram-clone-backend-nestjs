@@ -1,3 +1,4 @@
+import { PhotoModel } from "./photos.model";
 export declare class UserModel {
     id: string;
     username: string;
@@ -8,6 +9,7 @@ export declare class UserModel {
     avatar?: string;
     following?: UserModel[];
     followers?: UserModel[];
+    photos?: PhotoModel[];
     createdAt: Date;
     updatedAt: Date;
 }

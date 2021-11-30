@@ -20,7 +20,7 @@ __decorate([
     __metadata("design:type", String)
 ], RoomModel.prototype, "id", void 0);
 __decorate([
-    graphql_1.Field(type => [message_model_1.MessageModel,], { nullable: true }),
+    graphql_1.Field(type => [message_model_1.MessageModel], { nullable: true }),
     __metadata("design:type", Array)
 ], RoomModel.prototype, "messages", void 0);
 __decorate([

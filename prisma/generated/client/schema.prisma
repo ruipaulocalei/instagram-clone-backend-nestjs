@@ -26,6 +26,7 @@ model User {
   updatedAt DateTime  @updatedAt
   rooms     Room[]
   photos    Photo[]
+  likes     Like[]
 }
 
 model Photo {
@@ -36,6 +37,19 @@ model Photo {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  likes     Like[]
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  photo     Photo    @relation(fields: [photoId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  photoId   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([photoId, userId])
 }
 
 model Room {
@@ -51,8 +65,8 @@ model Message {
   payload   String
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  room      Room     @relation(fields: [roomId], references: [id])
-  roomId    String
+  room      Room?    @relation(fields: [roomId], references: [id])
+  roomId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -25,7 +25,7 @@ __decorate([
 ], MessageModel.prototype, "payload", void 0);
 __decorate([
     graphql_1.Field(type => rooms_model_1.RoomModel, { nullable: true }),
-    __metadata("design:type", users_model_1.UserModel)
+    __metadata("design:type", rooms_model_1.RoomModel)
 ], MessageModel.prototype, "room", void 0);
 __decorate([
     graphql_1.Field(type => users_model_1.UserModel, { nullable: true }),

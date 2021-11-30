@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,9 +21,12 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const users_model_1 = require("../models/users.model");
 const output_dto_1 = require("../common/dtos/output.dto");
 const rooms_model_1 = require("../models/rooms.model");
+const constants_1 = require("../common/constants");
+const graphql_subscriptions_1 = require("graphql-subscriptions");
 let UsersService = class UsersService {
-    constructor(prisma) {
+    constructor(prisma, pubSub) {
         this.prisma = prisma;
+        this.pubSub = pubSub;
     }
     async createUser({ email, password, username, name }) {
         try {
@@ -70,7 +76,8 @@ let UsersService = class UsersService {
                 },
                 include: {
                     followers: true,
-                    following: true
+                    following: true,
+                    photos: true
                 }
             });
             if (!userExists) {
@@ -264,6 +271,13 @@ let UsersService = class UsersService {
             }
         });
     }
+    totalPublish({ id }) {
+        return this.prisma.photo.count({
+            where: {
+                userId: id
+            }
+        });
+    }
     totalFollowing({ id }) {
         return this.prisma.user.count({
             where: {
@@ -275,25 +289,71 @@ let UsersService = class UsersService {
             }
         });
     }
+    async isFollowing({ id }, user) {
+        if (!user) {
+            return false;
+        }
+        const ok = await this.prisma.user.count({
+            where: {
+                username: user.username,
+                following: {
+                    some: {
+                        id
+                    }
+                }
+            }
+        });
+        return Boolean(ok);
+    }
     async seeRooms({ id }) {
         const room = await this.prisma.room.findMany({
             where: {
                 users: {
                     some: {
                         id
-                    }
-                }
+                    },
+                },
             },
             include: {
-                messages: true
+                messages: true,
+                users: true
             }
         });
-        console.log(room.map(r => r.id));
         return room;
     }
     async sendMessage({ payload, roomId, userId }, { id }) {
+        let room = null;
         try {
-            let room = null;
+            if (userId) {
+                const userFind = await this.prisma.user.findUnique({
+                    where: {
+                        id: userId
+                    },
+                    select: {
+                        id: true
+                    }
+                });
+                if (!userFind) {
+                    return {
+                        ok: false,
+                        error: 'User not found'
+                    };
+                }
+                room = await this.prisma.room.create({
+                    data: {
+                        users: {
+                            connect: [
+                                {
+                                    id: userId
+                                },
+                                {
+                                    id
+                                },
+                            ],
+                        },
+                    }
+                });
+            }
             if (roomId) {
                 room = await this.prisma.room.findUnique({
                     where: {
@@ -309,49 +369,7 @@ let UsersService = class UsersService {
                     };
                 }
             }
-            else if (userId) {
-                const userFind = await this.prisma.user.findUnique({
-                    where: {
-                        id: userId
-                    }
-                });
-                if (!userFind) {
-                    return {
-                        ok: false,
-                        error: 'User not found'
-                    };
-                }
-                const newRoom = await this.prisma.room.create({
-                    data: {
-                        users: {
-                            connect: [
-                                {
-                                    id: userId
-                                },
-                                {
-                                    id
-                                }
-                            ]
-                        }
-                    }
-                });
-                room = await this.prisma.message.create({
-                    data: {
-                        payload,
-                        room: {
-                            connect: {
-                                id: newRoom.id
-                            }
-                        },
-                        user: {
-                            connect: {
-                                id
-                            }
-                        }
-                    }
-                });
-            }
-            await this.prisma.message.create({
+            const message = await this.prisma.message.create({
                 data: {
                     payload,
                     room: {
@@ -366,6 +384,7 @@ let UsersService = class UsersService {
                     }
                 }
             });
+            this.pubSub.publish(constants_1.NEW_MESSAGE, { messageUpdate: Object.assign({}, message) });
             return {
                 ok: true,
             };
@@ -380,7 +399,9 @@ let UsersService = class UsersService {
 };
 UsersService = __decorate([
     common_1.Injectable(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __param(1, common_1.Inject(constants_1.PUB_SUB)),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        graphql_subscriptions_1.PubSub])
 ], UsersService);
 exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

@@ -12,6 +12,7 @@ var UserModel_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const photos_model_1 = require("./photos.model");
 let UserModel = UserModel_1 = class UserModel {
 };
 __decorate([
@@ -50,6 +51,10 @@ __decorate([
     graphql_1.Field(type => [UserModel_1], { nullable: true }),
     __metadata("design:type", Array)
 ], UserModel.prototype, "followers", void 0);
+__decorate([
+    graphql_1.Field(type => [photos_model_1.PhotoModel], { nullable: true }),
+    __metadata("design:type", Array)
+], UserModel.prototype, "photos", void 0);
 __decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)

@@ -10,8 +10,8 @@ export class PhotoModel {
   file: string
   @Field(type => String, { nullable: true })
   caption?: string
-  @Field(type => [UserModel])
-  users: UserModel[]
+  @Field(type => UserModel)
+  user: UserModel
   @Field(type => Date)
   createdAt: Date
   @Field(type => Date)

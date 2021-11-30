@@ -10,7 +10,7 @@ export class MessageModel {
   @Field(type => String)
   payload: string
   @Field(type => RoomModel, { nullable: true })
-  room?: UserModel
+  room?: RoomModel
   @Field(type => UserModel, { nullable: true })
   user?: UserModel
   @Field(type => Date)

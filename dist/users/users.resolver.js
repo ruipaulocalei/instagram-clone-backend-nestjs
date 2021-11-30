@@ -18,7 +18,9 @@ const graphql_1 = require("@nestjs/graphql");
 const apollo_server_express_1 = require("apollo-server-express");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
+const constants_1 = require("../common/constants");
 const output_dto_1 = require("../common/dtos/output.dto");
+const message_model_1 = require("../models/message.model");
 const rooms_model_1 = require("../models/rooms.model");
 const users_model_1 = require("../models/users.model");
 const create_user_dto_1 = require("./dtos/create-user.dto");
@@ -28,10 +30,10 @@ const login_dto_1 = require("./dtos/login.dto");
 const see_profile_dto_1 = require("./dtos/see-profile.dto");
 const send_message_dto_1 = require("./dtos/send-message.dto");
 const users_service_1 = require("./users.service");
-const pubsub = new apollo_server_express_1.PubSub();
 let UsersResolver = class UsersResolver {
-    constructor(usersService) {
+    constructor(usersService, pubSub) {
         this.usersService = usersService;
+        this.pubSub = pubSub;
     }
     async createUser(data) {
         return this.usersService.createUser(data);
@@ -54,8 +56,8 @@ let UsersResolver = class UsersResolver {
     totalFollowing(user) {
         return this.usersService.totalFollowing(user);
     }
-    isFollowing(user) {
-        return false;
+    isFollowing(user, authUser) {
+        return this.usersService.isFollowing(user, authUser);
     }
     isMe({ id }, authUser) {
         if (!authUser) {
@@ -66,6 +68,9 @@ let UsersResolver = class UsersResolver {
     totalFollowers(user) {
         return this.usersService.totalFollowers(user);
     }
+    totalPublish(user) {
+        return this.usersService.totalPublish(user);
+    }
     async unfollowUser(authUser, { username }) {
         return this.usersService.unfollowUser(authUser.id, { username });
     }
@@ -75,15 +80,15 @@ let UsersResolver = class UsersResolver {
     async myProfile(authUser) {
         return this.usersService.me(authUser);
     }
+    ready(roomId) {
+        this.pubSub.publish('New_Message', { messageUpdate: roomId });
+        return true;
+    }
     async sendMessage({ payload, roomId, userId }, authUser) {
         return this.usersService.sendMessage({ payload, roomId, userId }, authUser);
     }
-    ready() {
-        pubsub.publish('New_Message', { messageUpdate: 'Its ready RPC' });
-    }
-    messageUpdate(user) {
-        console.log(user);
-        return pubsub.asyncIterator('New_Message');
+    messageUpdate(roomId) {
+        return this.pubSub.asyncIterator(constants_1.NEW_MESSAGE);
     }
 };
 __decorate([
@@ -144,9 +149,10 @@ __decorate([
 __decorate([
     graphql_1.ResolveField(type => Boolean),
     __param(0, graphql_1.Parent()),
+    __param(1, auth_user_decorator_1.AuthUser()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_model_1.UserModel]),
-    __metadata("design:returntype", Boolean)
+    __metadata("design:paramtypes", [users_model_1.UserModel, users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "isFollowing", null);
 __decorate([
     graphql_1.ResolveField(type => Boolean),
@@ -164,6 +170,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "totalFollowers", null);
 __decorate([
+    graphql_1.ResolveField(type => Number),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "totalPublish", null);
+__decorate([
     graphql_1.Mutation(() => output_dto_1.OutputDto),
     common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, auth_user_decorator_1.AuthUser()),
@@ -173,7 +186,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "unfollowUser", null);
 __decorate([
-    graphql_1.Query(() => rooms_model_1.RoomModel),
+    graphql_1.Query(() => [rooms_model_1.RoomModel]),
     common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, auth_user_decorator_1.AuthUser()),
     __metadata("design:type", Function),
@@ -189,30 +202,40 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "myProfile", null);
 __decorate([
+    graphql_1.Mutation(returns => Boolean),
+    __param(0, graphql_1.Args('roomId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "ready", null);
+__decorate([
     graphql_1.Mutation(() => output_dto_1.OutputDto),
     common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, graphql_1.Args('input')),
     __param(1, auth_user_decorator_1.AuthUser()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [send_message_dto_1.SendMessageInput, users_model_1.UserModel]),
+    __metadata("design:paramtypes", [send_message_dto_1.SendMessageInput,
+        users_model_1.UserModel]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "sendMessage", null);
 __decorate([
-    graphql_1.Mutation(returns => Boolean),
+    graphql_1.Subscription(returns => message_model_1.MessageModel, {
+        filter: ({ messageUpdate }, { roomId }, { user }) => {
+            console.log(messageUpdate, roomId, user);
+            return messageUpdate.roomId === roomId;
+        }
+    }),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, graphql_1.Args('roomId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UsersResolver.prototype, "ready", null);
-__decorate([
-    graphql_1.Subscription(returns => String),
-    __param(0, auth_user_decorator_1.AuthUser()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_model_1.UserModel]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "messageUpdate", null);
 UsersResolver = __decorate([
     graphql_1.Resolver(of => users_model_1.UserModel),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __param(1, common_1.Inject(constants_1.PUB_SUB)),
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        apollo_server_express_1.PubSub])
 ], UsersResolver);
 exports.UsersResolver = UsersResolver;
 //# sourceMappingURL=users.resolver.js.map

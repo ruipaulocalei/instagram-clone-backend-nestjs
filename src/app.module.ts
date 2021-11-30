@@ -6,6 +6,7 @@ import { JwtMiddleware } from './users/jwt/jwt.middleware';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PhotosModule } from './photos/photos.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PhotosModule } from './photos/photos.module';
     UsersModule,
     AuthModule,
     PhotosModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,9 +9,11 @@ import { OutputDto } from 'src/common/dtos/output.dto';
 import { RoomModel } from 'src/models/rooms.model';
 import { SendMessageInput, SendMessageOutput } from './dtos/send-message.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
+import { PubSub } from 'graphql-subscriptions';
 export declare class UsersService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly pubSub;
+    constructor(prisma: PrismaService, pubSub: PubSub);
     createUser({ email, password, username, name }: CreateUserInput): Promise<CreateUserOutput>;
     seeProfile({ username }: Prisma.UserWhereUniqueInput): Promise<SeeProfileOutput>;
     login({ username, password }: LoginInputDto): Promise<LoginOutputDto>;
@@ -21,7 +23,9 @@ export declare class UsersService {
     followUser(id: string, { username }: Prisma.UserWhereUniqueInput): Promise<OutputDto>;
     unfollowUser(id: string, { username }: Prisma.UserWhereUniqueInput): Promise<OutputDto>;
     totalFollowers({ id }: Prisma.UserWhereUniqueInput): Promise<number>;
+    totalPublish({ id }: Prisma.UserWhereUniqueInput): Promise<number>;
     totalFollowing({ id }: UserModel): Promise<number>;
-    seeRooms({ id }: UserModel): Promise<RoomModel[] | null>;
+    isFollowing({ id }: UserModel, user: UserModel): Promise<boolean>;
+    seeRooms({ id }: UserModel): Promise<RoomModel[]>;
     sendMessage({ payload, roomId, userId }: SendMessageInput, { id }: Prisma.UserWhereUniqueInput): Promise<SendMessageOutput>;
 }

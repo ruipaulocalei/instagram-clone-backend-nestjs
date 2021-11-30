@@ -3,7 +3,7 @@ export declare class PhotoModel {
     id: string;
     file: string;
     caption?: string;
-    users: UserModel[];
+    user: UserModel;
     createdAt: Date;
     updatedAt: Date;
 }

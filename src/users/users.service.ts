@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
 import { compare, hash } from 'bcrypt'
@@ -14,10 +14,14 @@ import { FollowUserInput } from './dtos/follow-user.dto';
 import { RoomModel } from 'src/models/rooms.model';
 import { SendMessageInput, SendMessageOutput } from './dtos/send-message.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
+import { NEW_MESSAGE, PUB_SUB } from 'src/common/constants';
+import { PubSub } from 'graphql-subscriptions';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub
+  ) { }
   async createUser({ email, password, username, name }: CreateUserInput): Promise<CreateUserOutput> {
     try {
       const userExists = await this.prisma.user.findFirst({
@@ -66,7 +70,8 @@ export class UsersService {
         },
         include: {
           followers: true,
-          following: true
+          following: true,
+          photos: true
         }
       })
       if (!userExists) {
@@ -267,6 +272,14 @@ export class UsersService {
     })
   }
 
+  totalPublish({ id }: Prisma.UserWhereUniqueInput): Promise<number> {
+    return this.prisma.photo.count({
+      where: {
+        userId: id
+      }
+    })
+  }
+
   totalFollowing({ id }: UserModel): Promise<number> {
     return this.prisma.user.count({
       where: {
@@ -279,27 +292,75 @@ export class UsersService {
     })
   }
 
-  async seeRooms({ id }: UserModel): Promise<RoomModel[] | null> {
+  async isFollowing({ id }: UserModel, user: UserModel) {
+    if (!user) {
+      return false
+    }
+    const ok = await this.prisma.user.count({
+      where: {
+        username: user.username,
+        following: {
+          some: {
+            id
+          }
+        }
+      }
+    })
+    return Boolean(ok)
+  }
+
+  async seeRooms({ id }: UserModel): Promise<RoomModel[]> {
     const room = await this.prisma.room.findMany({
       where: {
         users: {
           some: {
             id
-          }
-        }
+          },
+        },
       },
       include: {
-        messages: true
+        messages: true,
+        users: true
       }
     })
-    console.log(room.map(r => r.id))
     return room
   }
 
   async sendMessage({ payload, roomId, userId }: SendMessageInput,
     { id }: Prisma.UserWhereUniqueInput): Promise<SendMessageOutput> {
+    let room = null
     try {
-      let room = null
+      if (userId) {
+        const userFind = await this.prisma.user.findUnique({
+          where: {
+            id: userId
+          },
+          select: {
+            id: true
+          }
+        })
+        if (!userFind) {
+          return {
+            ok: false,
+            error: 'User not found'
+          }
+        }
+        room = await this.prisma.room.create({
+          data: {
+            users: {
+              connect: [
+                {
+                  id: userId
+                },
+                {
+                  id
+                },
+              ],
+            },
+          }
+        })
+      }
+
       if (roomId) {
         room = await this.prisma.room.findUnique({
           where: {
@@ -316,50 +377,7 @@ export class UsersService {
         }
       }
 
-      else if (userId) {
-        const userFind = await this.prisma.user.findUnique({
-          where: {
-            id: userId
-          }
-        })
-        if (!userFind) {
-          return {
-            ok: false,
-            error: 'User not found'
-          }
-        }
-        const newRoom = await this.prisma.room.create({
-          data: {
-            users: {
-              connect: [
-                {
-                  id: userId
-                },
-                {
-                  id
-                }
-              ]
-            }
-          }
-        })
-        room = await this.prisma.message.create({
-          data: {
-            payload,
-            room: {
-              connect: {
-                id: newRoom.id
-              }
-            },
-            user: {
-              connect: {
-                id
-              }
-            }
-          }
-        })
-      }
-
-      await this.prisma.message.create({
+      const message = await this.prisma.message.create({
         data: {
           payload,
           room: {
@@ -374,6 +392,7 @@ export class UsersService {
           }
         }
       })
+      this.pubSub.publish(NEW_MESSAGE, { messageUpdate: { ...message } })
       return {
         ok: true,
       }
@@ -384,4 +403,20 @@ export class UsersService {
       }
     }
   }
+
+  // async seeRooms({ id }: Prisma.UserWhereUniqueInput): Promise<Room[]> {
+  //   try {
+  //     return await this.prisma.room.findMany({
+  //       where: {
+  //         users: {
+  //           some: {
+  //             id
+  //           }
+  //         }
+  //       }
+  //     })
+  //   } catch (error) {
+
+  //   }
+  // }
 }

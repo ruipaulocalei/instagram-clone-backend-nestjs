@@ -97,6 +97,14 @@ exports.Prisma.PhotoScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
+exports.Prisma.LikeScalarFieldEnum = makeEnum({
+  id: 'id',
+  photoId: 'photoId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
 exports.Prisma.RoomScalarFieldEnum = makeEnum({
   id: 'id',
   createdAt: 'createdAt',
@@ -121,6 +129,7 @@ exports.Prisma.SortOrder = makeEnum({
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
   Photo: 'Photo',
+  Like: 'Like',
   Room: 'Room',
   Message: 'Message'
 });

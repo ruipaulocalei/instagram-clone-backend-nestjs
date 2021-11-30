@@ -1,3 +1,4 @@
+import { PubSub } from "apollo-server-express";
 import { OutputDto } from "src/common/dtos/output.dto";
 import { RoomModel } from "src/models/rooms.model";
 import { UserModel } from "src/models/users.model";
@@ -10,7 +11,8 @@ import { SendMessageInput } from "./dtos/send-message.dto";
 import { UsersService } from "./users.service";
 export declare class UsersResolver {
     private readonly usersService;
-    constructor(usersService: UsersService);
+    private readonly pubSub;
+    constructor(usersService: UsersService, pubSub: PubSub);
     createUser(data: CreateUserInput): Promise<CreateUserOutput>;
     seeProfile(username: string): Promise<SeeProfileOutput>;
     login({ username, password }: LoginInputDto): Promise<LoginOutputDto>;
@@ -18,13 +20,14 @@ export declare class UsersResolver {
     editProfile(authUser: UserModel, { name, email, password, username }: EditProfileInput): Promise<EditProfileOutput>;
     followUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
     totalFollowing(user: UserModel): Promise<number>;
-    isFollowing(user: UserModel): boolean;
+    isFollowing(user: UserModel, authUser: UserModel): Promise<boolean>;
     isMe({ id }: UserModel, authUser: UserModel): boolean;
     totalFollowers(user: UserModel): Promise<number>;
+    totalPublish(user: UserModel): Promise<number>;
     unfollowUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
     seeRooms(authUser: UserModel): Promise<RoomModel[]>;
     myProfile(authUser: UserModel): Promise<import("../../prisma/generated/client").User>;
+    ready(roomId: string): boolean;
     sendMessage({ payload, roomId, userId }: SendMessageInput, authUser: UserModel): Promise<import("./dtos/send-message.dto").SendMessageOutput>;
-    ready(): void;
-    messageUpdate(user: UserModel): AsyncIterator<unknown, any, undefined>;
+    messageUpdate(roomId: string): AsyncIterator<unknown, any, undefined>;
 }
