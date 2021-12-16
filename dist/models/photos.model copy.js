@@ -27,9 +27,9 @@ __decorate([
     __metadata("design:type", String)
 ], PhotoModel.prototype, "caption", void 0);
 __decorate([
-    graphql_1.Field(type => [users_model_1.UserModel]),
-    __metadata("design:type", Array)
-], PhotoModel.prototype, "users", void 0);
+    graphql_1.Field(type => users_model_1.UserModel),
+    __metadata("design:type", users_model_1.UserModel)
+], PhotoModel.prototype, "user", void 0);
 __decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)

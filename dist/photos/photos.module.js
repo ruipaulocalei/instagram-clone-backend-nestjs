@@ -16,7 +16,8 @@ let PhotosModule = class PhotosModule {
 };
 PhotosModule = __decorate([
     common_1.Module({
-        providers: [photos_service_1.PhotosService, prisma_service_1.PrismaService, photos_resolver_1.PhotoResolver, users_service_1.UsersService]
+        providers: [photos_service_1.PhotosService, prisma_service_1.PrismaService, photos_resolver_1.PhotoResolver, users_service_1.UsersService],
+        exports: [photos_service_1.PhotosService]
     })
 ], PhotosModule);
 exports.PhotosModule = PhotosModule;

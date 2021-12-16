@@ -396,6 +396,37 @@ let UsersService = class UsersService {
             };
         }
     }
+    async seeRoom({ id: roomId }, { id }) {
+        try {
+            return await this.prisma.room.findFirst({
+                where: {
+                    id: roomId,
+                    users: {
+                        some: {
+                            id
+                        }
+                    }
+                },
+                include: {
+                    users: true,
+                    messages: true
+                }
+            });
+        }
+        catch (error) {
+        }
+    }
+    async users({ id }) {
+        try {
+            return await this.prisma.room.findMany({
+                where: {
+                    id
+                }
+            });
+        }
+        catch (error) {
+        }
+    }
 };
 UsersService = __decorate([
     common_1.Injectable(),

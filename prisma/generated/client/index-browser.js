@@ -120,6 +120,15 @@ exports.Prisma.MessageScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
+exports.Prisma.CommentScalarFieldEnum = makeEnum({
+  id: 'id',
+  payload: 'payload',
+  userId: 'userId',
+  photoId: 'photoId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
 exports.Prisma.SortOrder = makeEnum({
   asc: 'asc',
   desc: 'desc'
@@ -131,7 +140,8 @@ exports.Prisma.ModelName = makeEnum({
   Photo: 'Photo',
   Like: 'Like',
   Room: 'Room',
-  Message: 'Message'
+  Message: 'Message',
+  Comment: 'Comment'
 });
 
 /**

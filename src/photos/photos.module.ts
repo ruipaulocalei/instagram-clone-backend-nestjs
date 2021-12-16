@@ -5,6 +5,7 @@ import { PhotoResolver } from './photos.resolver';
 import { PhotosService } from './photos.service';
 
 @Module({
-  providers: [PhotosService, PrismaService, PhotoResolver, UsersService]
+  providers: [PhotosService, PrismaService, PhotoResolver, UsersService],
+  exports: [PhotosService]
 })
 export class PhotosModule { }

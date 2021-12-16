@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { UserModel } from "./users.model";
 
-@InputType({ isAbstract: true })
+@InputType('PhotoModelPrisma', { isAbstract: true })
 @ObjectType()
 export class PhotoModel {
   @Field(type => String)

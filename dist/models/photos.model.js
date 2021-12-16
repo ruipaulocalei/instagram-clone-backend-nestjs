@@ -39,7 +39,7 @@ __decorate([
     __metadata("design:type", Date)
 ], PhotoModel.prototype, "updatedAt", void 0);
 PhotoModel = __decorate([
-    graphql_1.InputType({ isAbstract: true }),
+    graphql_1.InputType('PhotoModelPrisma', { isAbstract: true }),
     graphql_1.ObjectType()
 ], PhotoModel);
 exports.PhotoModel = PhotoModel;

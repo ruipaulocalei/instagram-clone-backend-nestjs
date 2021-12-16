@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
-import { Prisma, User } from 'prisma/generated/client';
+import { Prisma, Room, User } from 'prisma/generated/client';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
 import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { UserModel } from 'src/models/users.model';
@@ -28,4 +28,6 @@ export declare class UsersService {
     isFollowing({ id }: UserModel, user: UserModel): Promise<boolean>;
     seeRooms({ id }: UserModel): Promise<RoomModel[]>;
     sendMessage({ payload, roomId, userId }: SendMessageInput, { id }: Prisma.UserWhereUniqueInput): Promise<SendMessageOutput>;
+    seeRoom({ id: roomId }: Prisma.RoomWhereUniqueInput, { id }: Prisma.UserWhereUniqueInput): Promise<Room>;
+    users({ id }: Prisma.RoomWhereUniqueInput): Promise<Room[]>;
 }

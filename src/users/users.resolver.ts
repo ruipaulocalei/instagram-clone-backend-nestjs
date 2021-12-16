@@ -1,6 +1,6 @@
 import { Inject, UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
-import { Prisma } from "@prisma/client";
+import { Prisma, Room } from "@prisma/client";
 import { PubSub } from "apollo-server-express";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
@@ -15,6 +15,7 @@ import { FollowUserInput } from "./dtos/follow-user.dto";
 import { LoginInputDto, LoginOutputDto } from "./dtos/login.dto";
 import { MeOutput } from "./dtos/me.dto";
 import { SeeProfileOutput } from "./dtos/see-profile.dto";
+import { SeeRoomInput } from "./dtos/see-room.dto";
 import { SendMessageInput } from "./dtos/send-message.dto";
 import { UsersService } from "./users.service";
 
@@ -81,6 +82,11 @@ export class UsersResolver {
     return this.usersService.totalFollowers(user)
   }
 
+  @ResolveField(type => [RoomModel])
+  users(@Parent() room: Room) {
+    return this.usersService.users(room)
+  }
+
   @ResolveField(type => Number)
   totalPublish(@Parent() user: UserModel) {
     return this.usersService.totalPublish(user)
@@ -96,6 +102,12 @@ export class UsersResolver {
   @UseGuards(AuthGuard)
   async seeRooms(@AuthUser() authUser: UserModel) {
     return this.usersService.seeRooms(authUser)
+  }
+
+  @Query(() => RoomModel)
+  @UseGuards(AuthGuard)
+  async seeRoom(@Args('input') { roomId }: SeeRoomInput, @AuthUser() authUser: UserModel) {
+    return this.usersService.seeRoom({ id: roomId }, authUser)
   }
 
   @Query(() => UserModel)

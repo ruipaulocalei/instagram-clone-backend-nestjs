@@ -64,7 +64,7 @@ __decorate([
     __metadata("design:type", Date)
 ], UserModel.prototype, "updatedAt", void 0);
 UserModel = UserModel_1 = __decorate([
-    graphql_1.InputType({ isAbstract: true }),
+    graphql_1.InputType('UserModelPrisma', { isAbstract: true }),
     graphql_1.ObjectType()
 ], UserModel);
 exports.UserModel = UserModel;

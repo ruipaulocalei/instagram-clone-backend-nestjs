@@ -28,6 +28,7 @@ const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
 const follow_user_dto_1 = require("./dtos/follow-user.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const see_profile_dto_1 = require("./dtos/see-profile.dto");
+const see_room_dto_1 = require("./dtos/see-room.dto");
 const send_message_dto_1 = require("./dtos/send-message.dto");
 const users_service_1 = require("./users.service");
 let UsersResolver = class UsersResolver {
@@ -68,6 +69,9 @@ let UsersResolver = class UsersResolver {
     totalFollowers(user) {
         return this.usersService.totalFollowers(user);
     }
+    users(room) {
+        return this.usersService.users(room);
+    }
     totalPublish(user) {
         return this.usersService.totalPublish(user);
     }
@@ -76,6 +80,9 @@ let UsersResolver = class UsersResolver {
     }
     async seeRooms(authUser) {
         return this.usersService.seeRooms(authUser);
+    }
+    async seeRoom({ roomId }, authUser) {
+        return this.usersService.seeRoom({ id: roomId }, authUser);
     }
     async myProfile(authUser) {
         return this.usersService.me(authUser);
@@ -170,6 +177,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "totalFollowers", null);
 __decorate([
+    graphql_1.ResolveField(type => [rooms_model_1.RoomModel]),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "users", null);
+__decorate([
     graphql_1.ResolveField(type => Number),
     __param(0, graphql_1.Parent()),
     __metadata("design:type", Function),
@@ -193,6 +207,15 @@ __decorate([
     __metadata("design:paramtypes", [users_model_1.UserModel]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "seeRooms", null);
+__decorate([
+    graphql_1.Query(() => rooms_model_1.RoomModel),
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    __param(0, graphql_1.Args('input')),
+    __param(1, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [see_room_dto_1.SeeRoomInput, users_model_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "seeRoom", null);
 __decorate([
     graphql_1.Query(() => users_model_1.UserModel),
     common_1.UseGuards(auth_guard_1.AuthGuard),

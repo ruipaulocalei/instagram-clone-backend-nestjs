@@ -404,19 +404,37 @@ export class UsersService {
     }
   }
 
-  // async seeRooms({ id }: Prisma.UserWhereUniqueInput): Promise<Room[]> {
-  //   try {
-  //     return await this.prisma.room.findMany({
-  //       where: {
-  //         users: {
-  //           some: {
-  //             id
-  //           }
-  //         }
-  //       }
-  //     })
-  //   } catch (error) {
+  async seeRoom({ id: roomId }: Prisma.RoomWhereUniqueInput,
+    { id }: Prisma.UserWhereUniqueInput): Promise<Room> {
+    try {
+      return await this.prisma.room.findFirst({
+        where: {
+          id: roomId,
+          users: {
+            some: {
+              id
+            }
+          }
+        },
+        include: {
+          users: true,
+          messages: true
+        }
+      })
+    } catch (error) {
 
-  //   }
-  // }
+    }
+  }
+
+  async users({ id }: Prisma.RoomWhereUniqueInput): Promise<Room[]> {
+    try {
+      return await this.prisma.room.findMany({
+        where: {
+          id
+        }
+      })
+    } catch (error) {
+
+    }
+  }
 }
