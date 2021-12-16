@@ -141,6 +141,13 @@ let PhotosService = class PhotosService {
             },
         });
     }
+    comments(photo) {
+        return this.prisma.comment.count({
+            where: {
+                photoId: photo
+            },
+        });
+    }
     async isLiked({ id: photoId }, { id: userId }) {
         if (!userId) {
             return false;

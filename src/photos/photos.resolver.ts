@@ -36,6 +36,11 @@ export class PhotoResolver {
     return this.photosService.numberLikes(photo.id)
   }
 
+  @ResolveField(returns => Number)
+  comments(@Parent() photo: Photo) {
+    return this.photosService.comments(photo.id)
+  }
+
   @ResolveField(returns => Boolean)
   isMine(@Parent() photo: Photo, @AuthUser() authUser: UserModel) {
     if (!authUser) {

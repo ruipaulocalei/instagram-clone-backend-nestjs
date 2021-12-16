@@ -135,6 +135,14 @@ export class PhotosService {
     })
   }
 
+  comments(photo: string): Promise<number> {
+    return this.prisma.comment.count({
+      where: {
+        photoId: photo
+      },
+    })
+  }
+
   async isLiked({ id: photoId }: Photo, { id: userId }: Prisma.UserWhereUniqueInput): Promise<boolean> {
     if (!userId) {
       return false

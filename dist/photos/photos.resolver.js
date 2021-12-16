@@ -39,6 +39,9 @@ let PhotoResolver = class PhotoResolver {
     numberLikes(photo) {
         return this.photosService.numberLikes(photo.id);
     }
+    comments(photo) {
+        return this.photosService.comments(photo.id);
+    }
     isMine(photo, authUser) {
         if (!authUser) {
             return false;
@@ -82,6 +85,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PhotoResolver.prototype, "numberLikes", null);
+__decorate([
+    graphql_1.ResolveField(returns => Number),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PhotoResolver.prototype, "comments", null);
 __decorate([
     graphql_1.ResolveField(returns => Boolean),
     __param(0, graphql_1.Parent()),

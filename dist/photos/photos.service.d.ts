@@ -10,5 +10,6 @@ export declare class PhotosService {
     likePhoto({ id: photoId }: LikePhotoInput, { id: userId }: Prisma.UserWhereUniqueInput): Promise<LikePhotoOutput>;
     feed(user: Prisma.UserWhereUniqueInput): Promise<Photo[]>;
     numberLikes(photo: string): Promise<number>;
+    comments(photo: string): Promise<number>;
     isLiked({ id: photoId }: Photo, { id: userId }: Prisma.UserWhereUniqueInput): Promise<boolean>;
 }
