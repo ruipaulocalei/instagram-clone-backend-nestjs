@@ -18,6 +18,7 @@ const graphql_1 = require("@nestjs/graphql");
 const client_1 = require("../../prisma/generated/client");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
+const comment_model_1 = require("../models/comment.model");
 const photos_model_1 = require("../models/photos.model");
 const users_model_1 = require("../models/users.model");
 const like_photo_dto_1 = require("./dtos/like-photo.dto");
@@ -38,6 +39,9 @@ let PhotoResolver = class PhotoResolver {
     }
     numberLikes(photo) {
         return this.photosService.numberLikes(photo.id);
+    }
+    commentNumber(photo) {
+        return this.photosService.commentNumber(photo.id);
     }
     comments(photo) {
         return this.photosService.comments(photo.id);
@@ -87,6 +91,13 @@ __decorate([
 ], PhotoResolver.prototype, "numberLikes", null);
 __decorate([
     graphql_1.ResolveField(returns => Number),
+    __param(0, graphql_1.Parent()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PhotoResolver.prototype, "commentNumber", null);
+__decorate([
+    graphql_1.ResolveField(returns => [comment_model_1.CommentModel]),
     __param(0, graphql_1.Parent()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

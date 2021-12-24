@@ -29,6 +29,7 @@
 
 ### COMMENT
 - [x] COMMENT ON PHOTO
+- [x] SEE COMMENTS ON PHOTO
 
 ## Installation
 

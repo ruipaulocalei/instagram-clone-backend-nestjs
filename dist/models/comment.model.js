@@ -8,13 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var CommentModel_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentModel = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const client_1 = require("../../prisma/generated/client");
 const photos_model_1 = require("./photos.model");
 const users_model_1 = require("./users.model");
-let CommentModel = class CommentModel {
+let CommentModel = CommentModel_1 = class CommentModel {
 };
 __decorate([
     graphql_1.Field(type => String),
@@ -33,6 +34,10 @@ __decorate([
     __metadata("design:type", Object)
 ], CommentModel.prototype, "user", void 0);
 __decorate([
+    graphql_1.Field(type => [CommentModel_1]),
+    __metadata("design:type", Array)
+], CommentModel.prototype, "comments", void 0);
+__decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)
 ], CommentModel.prototype, "createdAt", void 0);
@@ -40,7 +45,7 @@ __decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)
 ], CommentModel.prototype, "updatedAt", void 0);
-CommentModel = __decorate([
+CommentModel = CommentModel_1 = __decorate([
     graphql_1.InputType({ isAbstract: true }),
     graphql_1.ObjectType()
 ], CommentModel);

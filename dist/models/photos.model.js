@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhotoModel = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const client_1 = require("../../prisma/generated/client");
+const comment_model_1 = require("./comment.model");
 const users_model_1 = require("./users.model");
 let PhotoModel = class PhotoModel {
 };
@@ -30,6 +32,10 @@ __decorate([
     graphql_1.Field(type => users_model_1.UserModel),
     __metadata("design:type", users_model_1.UserModel)
 ], PhotoModel.prototype, "user", void 0);
+__decorate([
+    graphql_1.Field(type => comment_model_1.CommentModel),
+    __metadata("design:type", Array)
+], PhotoModel.prototype, "comment", void 0);
 __decorate([
     graphql_1.Field(type => Date),
     __metadata("design:type", Date)

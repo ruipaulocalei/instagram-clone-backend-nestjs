@@ -18,7 +18,7 @@ let CommentsService = class CommentsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async createComment(user, { payload, photo: id }) {
+    async createComment(user, { payload, photoId: id }) {
         try {
             const photo = await this.prisma.photo.findUnique({
                 where: {

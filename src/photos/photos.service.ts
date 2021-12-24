@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { Photo } from 'prisma/generated/client';
+import { Comment, Photo, prisma } from 'prisma/generated/client';
 import { PhotoModel } from 'src/models/photos.model';
 import { PrismaService } from 'src/prisma.service';
 import { LikePhotoInput, LikePhotoOutput } from './dtos/like-photo.dto';
@@ -115,14 +115,15 @@ export class PhotosService {
           },
           {
             userId: user.id
-          }
+          },
         ]
       },
       orderBy: {
         createdAt: "desc"
       },
       include: {
-        user: true
+        user: true,
+        comments: true
       },
     })
   }
@@ -135,7 +136,19 @@ export class PhotosService {
     })
   }
 
-  comments(photo: string): Promise<number> {
+  async comments(photo: string): Promise<Comment[]> {
+    return await this.prisma.photo.findUnique({
+      where: {
+        id: photo
+      },
+    }).comments({
+      orderBy: {
+        createdAt: 'asc'
+      }
+    })
+  }
+
+  commentNumber(photo: string): Promise<number> {
     return this.prisma.comment.count({
       where: {
         photoId: photo

@@ -123,14 +123,15 @@ let PhotosService = class PhotosService {
                     },
                     {
                         userId: user.id
-                    }
+                    },
                 ]
             },
             orderBy: {
                 createdAt: "desc"
             },
             include: {
-                user: true
+                user: true,
+                comments: true
             },
         });
     }
@@ -141,7 +142,18 @@ let PhotosService = class PhotosService {
             },
         });
     }
-    comments(photo) {
+    async comments(photo) {
+        return await this.prisma.photo.findUnique({
+            where: {
+                id: photo
+            },
+        }).comments({
+            orderBy: {
+                createdAt: 'asc'
+            }
+        });
+    }
+    commentNumber(photo) {
         return this.prisma.comment.count({
             where: {
                 photoId: photo

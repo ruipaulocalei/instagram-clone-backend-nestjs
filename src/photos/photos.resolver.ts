@@ -3,6 +3,7 @@ import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/g
 import { Photo, User } from "prisma/generated/client";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
+import { CommentModel } from "src/models/comment.model";
 import { PhotoModel } from "src/models/photos.model";
 import { UserModel } from "src/models/users.model";
 import { LikePhotoInput, LikePhotoOutput } from "./dtos/like-photo.dto";
@@ -37,6 +38,11 @@ export class PhotoResolver {
   }
 
   @ResolveField(returns => Number)
+  commentNumber(@Parent() photo: Photo) {
+    return this.photosService.commentNumber(photo.id)
+  }
+
+  @ResolveField(returns => [CommentModel])
   comments(@Parent() photo: Photo) {
     return this.photosService.comments(photo.id)
   }

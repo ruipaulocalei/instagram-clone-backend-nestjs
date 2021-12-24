@@ -10,7 +10,8 @@ export declare class PhotoResolver {
     likePhoto({ id }: LikePhotoInput, authUser: UserModel): Promise<LikePhotoOutput>;
     feed(authUser: UserModel): Promise<Photo[]>;
     numberLikes(photo: Photo): Promise<number>;
-    comments(photo: Photo): Promise<number>;
+    commentNumber(photo: Photo): Promise<number>;
+    comments(photo: Photo): Promise<import("prisma/generated/client").Comment[]>;
     isMine(photo: Photo, authUser: UserModel): boolean;
     isLiked(id: Photo, user: User): Promise<boolean>;
 }

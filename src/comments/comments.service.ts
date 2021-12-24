@@ -10,7 +10,7 @@ export class CommentsService {
   constructor(
     private readonly prisma: PrismaService
   ) { }
-  async createComment(user: User, { payload, photo: id }: CreateCommentInput): Promise<CreateCommentOutput> {
+  async createComment(user: User, { payload, photoId: id }: CreateCommentInput): Promise<CreateCommentOutput> {
     try {
       const photo = await this.prisma.photo.findUnique({
         where: {

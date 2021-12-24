@@ -6,7 +6,7 @@ import { CommentModel } from "src/models/comment.model";
 @InputType()
 export class CreateCommentInput extends PickType(CommentModel, ['payload']) {
   @Field(type => String)
-  photo: string
+  photoId: string
 }
 
 @ObjectType()

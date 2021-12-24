@@ -4,5 +4,5 @@ import { CreateCommentInput, CreateCommentOutput } from './dtos/create-comment.d
 export declare class CommentsService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    createComment(user: User, { payload, photo: id }: CreateCommentInput): Promise<CreateCommentOutput>;
+    createComment(user: User, { payload, photoId: id }: CreateCommentInput): Promise<CreateCommentOutput>;
 }

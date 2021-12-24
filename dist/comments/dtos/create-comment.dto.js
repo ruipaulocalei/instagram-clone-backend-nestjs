@@ -19,7 +19,7 @@ let CreateCommentInput = class CreateCommentInput extends graphql_1.PickType(com
 __decorate([
     graphql_1.Field(type => String),
     __metadata("design:type", String)
-], CreateCommentInput.prototype, "photo", void 0);
+], CreateCommentInput.prototype, "photoId", void 0);
 CreateCommentInput = __decorate([
     graphql_1.InputType()
 ], CreateCommentInput);

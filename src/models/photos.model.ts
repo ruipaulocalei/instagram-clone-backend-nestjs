@@ -1,4 +1,6 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
+import { Comment } from "prisma/generated/client";
+import { CommentModel } from "./comment.model";
 import { UserModel } from "./users.model";
 
 @InputType('PhotoModelPrisma', { isAbstract: true })
@@ -12,6 +14,8 @@ export class PhotoModel {
   caption?: string
   @Field(type => UserModel)
   user: UserModel
+  @Field(type => CommentModel)
+  comment: [Comment]
   @Field(type => Date)
   createdAt: Date
   @Field(type => Date)

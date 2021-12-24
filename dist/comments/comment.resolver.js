@@ -19,14 +19,21 @@ const client_1 = require("../../prisma/generated/client");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const comment_model_1 = require("../models/comment.model");
+const users_model_1 = require("../models/users.model");
 const comments_service_1 = require("./comments.service");
 const create_comment_dto_1 = require("./dtos/create-comment.dto");
 let CommentResolver = class CommentResolver {
     constructor(commentsService) {
         this.commentsService = commentsService;
     }
-    createComment({ payload, photo }, authUser) {
-        return this.commentsService.createComment(authUser, { payload, photo });
+    createComment({ payload, photoId }, authUser) {
+        return this.commentsService.createComment(authUser, { payload, photoId });
+    }
+    isMine(comment, authUser) {
+        if (!authUser) {
+            return false;
+        }
+        return comment.userId === authUser.id;
     }
 };
 __decorate([
@@ -38,6 +45,14 @@ __decorate([
     __metadata("design:paramtypes", [create_comment_dto_1.CreateCommentInput, Object]),
     __metadata("design:returntype", void 0)
 ], CommentResolver.prototype, "createComment", null);
+__decorate([
+    graphql_1.ResolveField(returns => Boolean),
+    __param(0, graphql_1.Parent()),
+    __param(1, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, users_model_1.UserModel]),
+    __metadata("design:returntype", void 0)
+], CommentResolver.prototype, "isMine", null);
 CommentResolver = __decorate([
     graphql_1.Resolver(of => comment_model_1.CommentModel),
     __metadata("design:paramtypes", [comments_service_1.CommentsService])
