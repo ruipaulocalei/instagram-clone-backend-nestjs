@@ -2,6 +2,7 @@ import { Inject, UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
 import { Prisma, Room } from "@prisma/client";
 import { PubSub } from "apollo-server-express";
+import { Message } from "prisma/generated/client";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
 import { NEW_MESSAGE, PUB_SUB } from "src/common/constants";
@@ -98,17 +99,6 @@ export class UsersResolver {
     return this.usersService.unfollowUser(authUser.id, { username })
   }
 
-  @Query(() => [RoomModel])
-  @UseGuards(AuthGuard)
-  async seeRooms(@AuthUser() authUser: UserModel) {
-    return this.usersService.seeRooms(authUser)
-  }
-
-  @Query(() => RoomModel)
-  @UseGuards(AuthGuard)
-  async seeRoom(@Args('input') { roomId }: SeeRoomInput, @AuthUser() authUser: UserModel) {
-    return this.usersService.seeRoom({ id: roomId }, authUser)
-  }
 
   @Query(() => UserModel)
   @UseGuards(AuthGuard)
@@ -122,13 +112,6 @@ export class UsersResolver {
     return true
   }
 
-  @Mutation(() => OutputDto)
-  @UseGuards(AuthGuard)
-  async sendMessage(@Args('input') { payload, roomId, userId }: SendMessageInput,
-    @AuthUser() authUser: UserModel) {
-    return this.usersService.sendMessage({ payload, roomId, userId }, authUser)
-  }
-
   @Subscription(returns => MessageModel, {
     filter: ({ messageUpdate }, { roomId }, { user }) => {
       console.log(messageUpdate, roomId, user)
@@ -139,6 +122,19 @@ export class UsersResolver {
   messageUpdate(@Args('roomId') roomId: string) {
     // console.log(user)
     return this.pubSub.asyncIterator(NEW_MESSAGE)
+  }
+
+  @Mutation(returns => Boolean)
+  socket(@Args('input') payload: string) {
+    this.pubSub.publish('pub', {
+      readySocket: payload
+    })
+    return true
+  }
+
+  @Subscription(returns => String)
+  readySocket() {
+    return this.pubSub.asyncIterator('pub')
   }
 
 }

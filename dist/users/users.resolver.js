@@ -16,6 +16,7 @@ exports.UsersResolver = void 0;
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const apollo_server_express_1 = require("apollo-server-express");
+const client_1 = require("../../prisma/generated/client");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const constants_1 = require("../common/constants");
@@ -28,8 +29,6 @@ const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
 const follow_user_dto_1 = require("./dtos/follow-user.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const see_profile_dto_1 = require("./dtos/see-profile.dto");
-const see_room_dto_1 = require("./dtos/see-room.dto");
-const send_message_dto_1 = require("./dtos/send-message.dto");
 const users_service_1 = require("./users.service");
 let UsersResolver = class UsersResolver {
     constructor(usersService, pubSub) {
@@ -78,12 +77,6 @@ let UsersResolver = class UsersResolver {
     async unfollowUser(authUser, { username }) {
         return this.usersService.unfollowUser(authUser.id, { username });
     }
-    async seeRooms(authUser) {
-        return this.usersService.seeRooms(authUser);
-    }
-    async seeRoom({ roomId }, authUser) {
-        return this.usersService.seeRoom({ id: roomId }, authUser);
-    }
     async myProfile(authUser) {
         return this.usersService.me(authUser);
     }
@@ -91,11 +84,17 @@ let UsersResolver = class UsersResolver {
         this.pubSub.publish('New_Message', { messageUpdate: roomId });
         return true;
     }
-    async sendMessage({ payload, roomId, userId }, authUser) {
-        return this.usersService.sendMessage({ payload, roomId, userId }, authUser);
-    }
     messageUpdate(roomId) {
         return this.pubSub.asyncIterator(constants_1.NEW_MESSAGE);
+    }
+    socket(payload) {
+        this.pubSub.publish('pub', {
+            readySocket: payload
+        });
+        return true;
+    }
+    readySocket() {
+        return this.pubSub.asyncIterator('pub');
     }
 };
 __decorate([
@@ -200,23 +199,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "unfollowUser", null);
 __decorate([
-    graphql_1.Query(() => [rooms_model_1.RoomModel]),
-    common_1.UseGuards(auth_guard_1.AuthGuard),
-    __param(0, auth_user_decorator_1.AuthUser()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_model_1.UserModel]),
-    __metadata("design:returntype", Promise)
-], UsersResolver.prototype, "seeRooms", null);
-__decorate([
-    graphql_1.Query(() => rooms_model_1.RoomModel),
-    common_1.UseGuards(auth_guard_1.AuthGuard),
-    __param(0, graphql_1.Args('input')),
-    __param(1, auth_user_decorator_1.AuthUser()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [see_room_dto_1.SeeRoomInput, users_model_1.UserModel]),
-    __metadata("design:returntype", Promise)
-], UsersResolver.prototype, "seeRoom", null);
-__decorate([
     graphql_1.Query(() => users_model_1.UserModel),
     common_1.UseGuards(auth_guard_1.AuthGuard),
     __param(0, auth_user_decorator_1.AuthUser()),
@@ -232,16 +214,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "ready", null);
 __decorate([
-    graphql_1.Mutation(() => output_dto_1.OutputDto),
-    common_1.UseGuards(auth_guard_1.AuthGuard),
-    __param(0, graphql_1.Args('input')),
-    __param(1, auth_user_decorator_1.AuthUser()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [send_message_dto_1.SendMessageInput,
-        users_model_1.UserModel]),
-    __metadata("design:returntype", Promise)
-], UsersResolver.prototype, "sendMessage", null);
-__decorate([
     graphql_1.Subscription(returns => message_model_1.MessageModel, {
         filter: ({ messageUpdate }, { roomId }, { user }) => {
             console.log(messageUpdate, roomId, user);
@@ -254,6 +226,19 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "messageUpdate", null);
+__decorate([
+    graphql_1.Mutation(returns => Boolean),
+    __param(0, graphql_1.Args('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "socket", null);
+__decorate([
+    graphql_1.Subscription(returns => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "readySocket", null);
 UsersResolver = __decorate([
     graphql_1.Resolver(of => users_model_1.UserModel),
     __param(1, common_1.Inject(constants_1.PUB_SUB)),

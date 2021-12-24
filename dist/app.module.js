@@ -16,6 +16,7 @@ const auth_module_1 = require("./auth/auth.module");
 const photos_module_1 = require("./photos/photos.module");
 const common_module_1 = require("./common/common.module");
 const comments_module_1 = require("./comments/comments.module");
+const messages_module_1 = require("./messages/messages.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -34,6 +35,7 @@ AppModule = __decorate([
             photos_module_1.PhotosModule,
             common_module_1.CommonModule,
             comments_module_1.CommentsModule,
+            messages_module_1.MessagesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

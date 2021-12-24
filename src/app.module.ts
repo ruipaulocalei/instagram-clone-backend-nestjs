@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { PhotosModule } from './photos/photos.module';
 import { CommonModule } from './common/common.module';
 import { CommentsModule } from './comments/comments.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CommentsModule } from './comments/comments.module';
     PhotosModule,
     CommonModule,
     CommentsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

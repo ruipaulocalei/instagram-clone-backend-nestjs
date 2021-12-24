@@ -6,8 +6,6 @@ import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { UserModel } from 'src/models/users.model';
 import { EditProfileOutput } from './dtos/edit-profile.dto';
 import { OutputDto } from 'src/common/dtos/output.dto';
-import { RoomModel } from 'src/models/rooms.model';
-import { SendMessageInput, SendMessageOutput } from './dtos/send-message.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { PubSub } from 'graphql-subscriptions';
 export declare class UsersService {
@@ -26,8 +24,5 @@ export declare class UsersService {
     totalPublish({ id }: Prisma.UserWhereUniqueInput): Promise<number>;
     totalFollowing({ id }: UserModel): Promise<number>;
     isFollowing({ id }: UserModel, user: UserModel): Promise<boolean>;
-    seeRooms({ id }: UserModel): Promise<RoomModel[]>;
-    sendMessage({ payload, roomId, userId }: SendMessageInput, { id }: Prisma.UserWhereUniqueInput): Promise<SendMessageOutput>;
-    seeRoom({ id: roomId }: Prisma.RoomWhereUniqueInput, { id }: Prisma.UserWhereUniqueInput): Promise<Room>;
     users({ id }: Prisma.RoomWhereUniqueInput): Promise<Room[]>;
 }

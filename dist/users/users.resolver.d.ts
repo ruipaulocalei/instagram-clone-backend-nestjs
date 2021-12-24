@@ -1,15 +1,12 @@
 import { Room } from "@prisma/client";
 import { PubSub } from "apollo-server-express";
 import { OutputDto } from "src/common/dtos/output.dto";
-import { RoomModel } from "src/models/rooms.model";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { FollowUserInput } from "./dtos/follow-user.dto";
 import { LoginInputDto, LoginOutputDto } from "./dtos/login.dto";
 import { SeeProfileOutput } from "./dtos/see-profile.dto";
-import { SeeRoomInput } from "./dtos/see-room.dto";
-import { SendMessageInput } from "./dtos/send-message.dto";
 import { UsersService } from "./users.service";
 export declare class UsersResolver {
     private readonly usersService;
@@ -25,13 +22,12 @@ export declare class UsersResolver {
     isFollowing(user: UserModel, authUser: UserModel): Promise<boolean>;
     isMe({ id }: UserModel, authUser: UserModel): boolean;
     totalFollowers(user: UserModel): Promise<number>;
-    users(room: Room): Promise<import("../../prisma/generated/client").Room[]>;
+    users(room: Room): Promise<import("prisma/generated/client").Room[]>;
     totalPublish(user: UserModel): Promise<number>;
     unfollowUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
-    seeRooms(authUser: UserModel): Promise<RoomModel[]>;
-    seeRoom({ roomId }: SeeRoomInput, authUser: UserModel): Promise<import("../../prisma/generated/client").Room>;
-    myProfile(authUser: UserModel): Promise<import("../../prisma/generated/client").User>;
+    myProfile(authUser: UserModel): Promise<import("prisma/generated/client").User>;
     ready(roomId: string): boolean;
-    sendMessage({ payload, roomId, userId }: SendMessageInput, authUser: UserModel): Promise<import("./dtos/send-message.dto").SendMessageOutput>;
     messageUpdate(roomId: string): AsyncIterator<unknown, any, undefined>;
+    socket(payload: string): boolean;
+    readySocket(): AsyncIterator<unknown, any, undefined>;
 }
