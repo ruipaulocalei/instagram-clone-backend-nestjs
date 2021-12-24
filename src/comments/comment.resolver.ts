@@ -8,6 +8,7 @@ import { UserModel } from "src/models/users.model";
 import { CommentsService } from "./comments.service";
 import { CreateCommentInput, CreateCommentOutput } from "./dtos/create-comment.dto";
 import { DeleteCommentInput, DeleteCommentOutput } from "./dtos/delete-comment.dto";
+import { EditCommentInput, EditCommentOutput } from "./dtos/edit-comment.dto";
 
 @Resolver(of => CommentModel)
 export class CommentResolver {
@@ -23,6 +24,12 @@ export class CommentResolver {
   @Mutation(returns => DeleteCommentOutput)
   deleteComment(@Args('input') { commentId }: DeleteCommentInput, @AuthUser() authUser: User) {
     return this.commentsService.deleteComment(authUser, { commentId })
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(returns => EditCommentOutput)
+  editComment(@Args('input') { commentId, payload }: EditCommentInput, @AuthUser() authUser: User) {
+    return this.commentsService.editComment(authUser, { commentId, payload })
   }
 
   @ResolveField(returns => Boolean)

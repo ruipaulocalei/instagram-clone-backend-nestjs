@@ -100,6 +100,49 @@ let CommentsService = class CommentsService {
             };
         }
     }
+    async editComment(user, { commentId, payload }) {
+        try {
+            const comment = await this.prisma.comment.findUnique({
+                where: {
+                    id: commentId
+                },
+                select: {
+                    userId: true
+                }
+            });
+            if (!comment) {
+                return {
+                    ok: false,
+                    error: 'Impossible find comment'
+                };
+            }
+            else if (comment.userId !== user.id) {
+                return {
+                    ok: false,
+                    error: 'This comment isn\'t your'
+                };
+            }
+            else {
+                await this.prisma.comment.update({
+                    where: {
+                        id: commentId
+                    },
+                    data: {
+                        payload
+                    }
+                });
+            }
+            return {
+                ok: true
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An error occured'
+            };
+        }
+    }
 };
 CommentsService = __decorate([
     common_1.Injectable(),
