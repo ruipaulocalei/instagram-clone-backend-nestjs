@@ -60,6 +60,46 @@ let CommentsService = class CommentsService {
             };
         }
     }
+    async deleteComment(user, { commentId }) {
+        try {
+            const comment = await this.prisma.comment.findUnique({
+                where: {
+                    id: commentId
+                },
+                select: {
+                    userId: true
+                }
+            });
+            if (!comment) {
+                return {
+                    ok: false,
+                    error: 'Impossible find comment'
+                };
+            }
+            else if (comment.userId !== user.id) {
+                return {
+                    ok: false,
+                    error: 'This comment isn\'t your'
+                };
+            }
+            else {
+                await this.prisma.comment.delete({
+                    where: {
+                        id: commentId
+                    }
+                });
+            }
+            return {
+                ok: true
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An error occured'
+            };
+        }
+    }
 };
 CommentsService = __decorate([
     common_1.Injectable(),

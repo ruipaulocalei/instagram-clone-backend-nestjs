@@ -22,12 +22,16 @@ const comment_model_1 = require("../models/comment.model");
 const users_model_1 = require("../models/users.model");
 const comments_service_1 = require("./comments.service");
 const create_comment_dto_1 = require("./dtos/create-comment.dto");
+const delete_comment_dto_1 = require("./dtos/delete-comment.dto");
 let CommentResolver = class CommentResolver {
     constructor(commentsService) {
         this.commentsService = commentsService;
     }
     createComment({ payload, photoId }, authUser) {
         return this.commentsService.createComment(authUser, { payload, photoId });
+    }
+    deleteComment({ commentId }, authUser) {
+        return this.commentsService.deleteComment(authUser, { commentId });
     }
     isMine(comment, authUser) {
         if (!authUser) {
@@ -45,6 +49,15 @@ __decorate([
     __metadata("design:paramtypes", [create_comment_dto_1.CreateCommentInput, Object]),
     __metadata("design:returntype", void 0)
 ], CommentResolver.prototype, "createComment", null);
+__decorate([
+    common_1.UseGuards(auth_guard_1.AuthGuard),
+    graphql_1.Mutation(returns => delete_comment_dto_1.DeleteCommentOutput),
+    __param(0, graphql_1.Args('input')),
+    __param(1, auth_user_decorator_1.AuthUser()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [delete_comment_dto_1.DeleteCommentInput, Object]),
+    __metadata("design:returntype", void 0)
+], CommentResolver.prototype, "deleteComment", null);
 __decorate([
     graphql_1.ResolveField(returns => Boolean),
     __param(0, graphql_1.Parent()),
