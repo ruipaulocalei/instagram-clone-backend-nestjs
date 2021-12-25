@@ -20,7 +20,6 @@ const client_1 = require("../../prisma/generated/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const users_model_1 = require("../models/users.model");
 const output_dto_1 = require("../common/dtos/output.dto");
-const rooms_model_1 = require("../models/rooms.model");
 const constants_1 = require("../common/constants");
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 let UsersService = class UsersService {
@@ -314,6 +313,33 @@ let UsersService = class UsersService {
             });
         }
         catch (error) {
+        }
+    }
+    async searchUserByUsername({ query }) {
+        try {
+            const users = await this.prisma.user.findMany({
+                where: {
+                    username: {
+                        contains: query.toLowerCase()
+                    },
+                }
+            });
+            if (!users) {
+                return {
+                    ok: false,
+                    error: 'No user with that criterias'
+                };
+            }
+            return {
+                ok: true,
+                users
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: 'An expected error occured'
+            };
         }
     }
 };

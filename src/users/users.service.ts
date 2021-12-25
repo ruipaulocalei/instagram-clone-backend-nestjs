@@ -5,17 +5,14 @@ import { compare, hash } from 'bcrypt'
 import { Prisma, Room, User } from 'prisma/generated/client';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
 import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
-import { sign, verify } from 'jsonwebtoken'
-// import { Prisma, User } from '@prisma/client';
+import { sign } from 'jsonwebtoken'
 import { UserModel } from 'src/models/users.model';
 import { EditProfileOutput } from './dtos/edit-profile.dto';
 import { OutputDto } from 'src/common/dtos/output.dto';
-import { FollowUserInput } from './dtos/follow-user.dto';
-import { RoomModel } from 'src/models/rooms.model';
-import { SendMessageInput, SendMessageOutput } from './dtos/send-message.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
-import { NEW_MESSAGE, PUB_SUB } from 'src/common/constants';
+import { PUB_SUB } from 'src/common/constants';
 import { PubSub } from 'graphql-subscriptions';
+import { SearchUserInput, SearchUserOutput } from './dtos/search-convite.dto';
 
 @Injectable()
 export class UsersService {
@@ -320,4 +317,33 @@ export class UsersService {
 
     }
   }
+
+  async searchUserByUsername({ query }: SearchUserInput): Promise<SearchUserOutput> {
+    try {
+      const users = await this.prisma.user.findMany({
+        where: {
+          username: {
+            // startsWith: query.toLowerCase(),
+            contains: query.toLowerCase()
+          },
+        }
+      })
+      if (!users) {
+        return {
+          ok: false,
+          error: 'No user with that criterias'
+        }
+      }
+      return {
+        ok: true,
+        users
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'An expected error occured'
+      }
+    }
+  }
+
 }

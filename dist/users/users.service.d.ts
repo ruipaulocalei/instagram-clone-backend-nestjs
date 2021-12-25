@@ -8,6 +8,7 @@ import { EditProfileOutput } from './dtos/edit-profile.dto';
 import { OutputDto } from 'src/common/dtos/output.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { PubSub } from 'graphql-subscriptions';
+import { SearchUserInput, SearchUserOutput } from './dtos/search-convite.dto';
 export declare class UsersService {
     private readonly prisma;
     private readonly pubSub;
@@ -25,4 +26,5 @@ export declare class UsersService {
     totalFollowing({ id }: UserModel): Promise<number>;
     isFollowing({ id }: UserModel, user: UserModel): Promise<boolean>;
     users({ id }: Prisma.RoomWhereUniqueInput): Promise<Room[]>;
+    searchUserByUsername({ query }: SearchUserInput): Promise<SearchUserOutput>;
 }
