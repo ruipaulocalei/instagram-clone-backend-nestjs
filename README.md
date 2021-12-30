@@ -23,6 +23,7 @@
 - [x] UPLOAD PHOTO
 - [x] SEE PHOTO
 - [x] LIKE PHOTO
+- [x] UNLIKE PHOTO
 - [x] NUMBER LIKES
 - [x] ISMINE
 - [x] ISLIKED
@@ -30,6 +31,9 @@
 ### COMMENT
 - [x] COMMENT ON PHOTO
 - [x] SEE COMMENTS ON PHOTO
+- [x] ISMINE
+- [x] DELETE COMMENT
+- [x] EDIT COMMENT
 
 ## Installation
 
