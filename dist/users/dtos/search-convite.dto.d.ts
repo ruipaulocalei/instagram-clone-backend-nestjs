@@ -1,4 +1,4 @@
-import { User } from "prisma/generated/client";
+import { User } from "@prisma/client";
 import { OutputDto } from "src/common/dtos/output.dto";
 export declare class SearchUserInput {
     query: string;

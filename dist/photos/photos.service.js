@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhotosService = void 0;
 const common_1 = require("@nestjs/common");
-const client_1 = require("../../prisma/generated/client");
+const client_1 = require("../../generated/client");
 const photos_model_1 = require("../models/photos.model");
 const prisma_service_1 = require("../prisma.service");
 let PhotosService = class PhotosService {

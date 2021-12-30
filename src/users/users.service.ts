@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
 import { compare, hash } from 'bcrypt'
-import { Prisma, Room, User } from 'prisma/generated/client';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
 import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { sign } from 'jsonwebtoken'
@@ -13,6 +12,7 @@ import { UserProfileOutput } from './dtos/user-profile.dto';
 import { PUB_SUB } from 'src/common/constants';
 import { PubSub } from 'graphql-subscriptions';
 import { SearchUserInput, SearchUserOutput } from './dtos/search-convite.dto';
+import { Prisma, Room, User } from 'generated/client';
 
 @Injectable()
 export class UsersService {

@@ -1,4 +1,4 @@
-import { Comment } from "prisma/generated/client";
+import { Comment } from "generated/client";
 import { OutputDto } from "src/common/dtos/output.dto";
 import { CommentModel } from "src/models/comment.model";
 declare const CreateCommentInput_base: import("@nestjs/common").Type<Pick<CommentModel, "payload">>;

@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client';
-import { Comment, Photo } from 'prisma/generated/client';
+import { Comment, Photo, Prisma } from 'generated/client';
 import { PrismaService } from 'src/prisma.service';
 import { LikePhotoInput, LikePhotoOutput } from './dtos/like-photo.dto';
 import { CreatePhotoInput, CreatePhotoOutput } from './dtos/upload-photo.dto';

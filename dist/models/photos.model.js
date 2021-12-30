@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhotoModel = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const client_1 = require("../../prisma/generated/client");
 const comment_model_1 = require("./comment.model");
 const users_model_1 = require("./users.model");
 let PhotoModel = class PhotoModel {

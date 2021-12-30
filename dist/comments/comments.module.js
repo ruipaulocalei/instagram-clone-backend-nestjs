@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentsModule = void 0;
 const common_1 = require("@nestjs/common");
-const client_1 = require("../../prisma/generated/client");
 const photos_service_1 = require("../photos/photos.service");
 const prisma_service_1 = require("../prisma.service");
 const users_service_1 = require("../users/users.service");

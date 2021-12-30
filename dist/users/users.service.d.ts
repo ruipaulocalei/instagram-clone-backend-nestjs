@@ -1,6 +1,5 @@
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
-import { Prisma, Room, User } from 'prisma/generated/client';
 import { SeeProfileOutput } from './dtos/see-profile.dto';
 import { LoginInputDto, LoginOutputDto } from './dtos/login.dto';
 import { UserModel } from 'src/models/users.model';
@@ -9,6 +8,7 @@ import { OutputDto } from 'src/common/dtos/output.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { PubSub } from 'graphql-subscriptions';
 import { SearchUserInput, SearchUserOutput } from './dtos/search-convite.dto';
+import { Prisma, Room, User } from 'generated/client';
 export declare class UsersService {
     private readonly prisma;
     private readonly pubSub;

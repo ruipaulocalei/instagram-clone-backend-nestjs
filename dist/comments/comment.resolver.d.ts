@@ -1,4 +1,4 @@
-import { Comment, User } from "prisma/generated/client";
+import { Comment, User } from "../../generated/client";
 import { UserModel } from "src/models/users.model";
 import { CommentsService } from "./comments.service";
 import { CreateCommentInput, CreateCommentOutput } from "./dtos/create-comment.dto";

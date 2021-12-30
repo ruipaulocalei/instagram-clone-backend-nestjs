@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { User } from 'generated/client';
 import { userInfo } from 'os';
-import { Photo, Prisma, User } from 'prisma/generated/client';
 import { PhotoModel } from 'src/models/photos.model';
 import { PrismaService } from 'src/prisma.service';
 import { CreateCommentInput, CreateCommentOutput } from './dtos/create-comment.dto';

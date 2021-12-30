@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PubSub } from 'apollo-server-express';
-import { Prisma, Room } from 'prisma/generated/client';
+import { Prisma, Room } from 'generated/client';
 import { NEW_MESSAGE, PUB_SUB } from 'src/common/constants';
 import { RoomModel } from 'src/models/rooms.model';
 import { UserModel } from 'src/models/users.model';

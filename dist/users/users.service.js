@@ -16,12 +16,12 @@ exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const bcrypt_1 = require("bcrypt");
-const client_1 = require("../../prisma/generated/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const users_model_1 = require("../models/users.model");
 const output_dto_1 = require("../common/dtos/output.dto");
 const constants_1 = require("../common/constants");
 const graphql_subscriptions_1 = require("graphql-subscriptions");
+const client_1 = require("../../generated/client");
 let UsersService = class UsersService {
     constructor(prisma, pubSub) {
         this.prisma = prisma;

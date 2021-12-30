@@ -1,8 +1,7 @@
 import { Inject, UseGuards } from "@nestjs/common";
-import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
+import { Args, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
 import { Prisma, Room } from "@prisma/client";
 import { PubSub } from "apollo-server-express";
-import { Message, User } from "prisma/generated/client";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
 import { NEW_MESSAGE, PUB_SUB } from "src/common/constants";
@@ -14,11 +13,8 @@ import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { FollowUserInput } from "./dtos/follow-user.dto";
 import { LoginInputDto, LoginOutputDto } from "./dtos/login.dto";
-import { MeOutput } from "./dtos/me.dto";
 import { SearchUserInput, SearchUserOutput } from "./dtos/search-convite.dto";
 import { SeeProfileOutput } from "./dtos/see-profile.dto";
-import { SeeRoomInput } from "./dtos/see-room.dto";
-import { SendMessageInput } from "./dtos/send-message.dto";
 import { UsersService } from "./users.service";
 
 // const pubsub = new PubSub()

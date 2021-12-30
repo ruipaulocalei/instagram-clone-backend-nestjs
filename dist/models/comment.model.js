@@ -12,7 +12,7 @@ var CommentModel_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentModel = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const client_1 = require("../../prisma/generated/client");
+const client_1 = require("../../generated/client");
 const photos_model_1 = require("./photos.model");
 const users_model_1 = require("./users.model");
 let CommentModel = CommentModel_1 = class CommentModel {

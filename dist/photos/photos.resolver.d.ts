@@ -1,4 +1,4 @@
-import { Photo, User } from "prisma/generated/client";
+import { Photo, User } from "generated/client";
 import { UserModel } from "src/models/users.model";
 import { LikePhotoInput, LikePhotoOutput } from "./dtos/like-photo.dto";
 import { CreatePhotoInput, CreatePhotoOutput } from "./dtos/upload-photo.dto";
@@ -11,7 +11,7 @@ export declare class PhotoResolver {
     feed(authUser: UserModel): Promise<Photo[]>;
     numberLikes(photo: Photo): Promise<number>;
     commentNumber(photo: Photo): Promise<number>;
-    comments(photo: Photo): Promise<import("prisma/generated/client").Comment[]>;
+    comments(photo: Photo): Promise<import("generated/client").Comment[]>;
     isMine(photo: Photo, authUser: UserModel): boolean;
     isLiked(id: Photo, user: User): Promise<boolean>;
 }

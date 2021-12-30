@@ -16,7 +16,6 @@ exports.UsersResolver = void 0;
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const apollo_server_express_1 = require("apollo-server-express");
-const client_1 = require("../../prisma/generated/client");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const constants_1 = require("../common/constants");

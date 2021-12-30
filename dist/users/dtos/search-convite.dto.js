@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchUserOutput = exports.SearchUserInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const client_1 = require("../../../prisma/generated/client");
 const output_dto_1 = require("../../common/dtos/output.dto");
 const users_model_1 = require("../../models/users.model");
 let SearchUserInput = class SearchUserInput {

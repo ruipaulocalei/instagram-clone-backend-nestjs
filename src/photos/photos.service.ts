@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { Comment, Photo, prisma } from 'prisma/generated/client';
+import { Comment, Photo, Prisma } from 'generated/client';
 import { PhotoModel } from 'src/models/photos.model';
 import { PrismaService } from 'src/prisma.service';
 import { LikePhotoInput, LikePhotoOutput } from './dtos/like-photo.dto';

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessagesService = void 0;
 const common_1 = require("@nestjs/common");
 const apollo_server_express_1 = require("apollo-server-express");
-const client_1 = require("../../prisma/generated/client");
+const client_1 = require("../../generated/client");
 const constants_1 = require("../common/constants");
 const rooms_model_1 = require("../models/rooms.model");
 const users_model_1 = require("../models/users.model");

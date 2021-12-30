@@ -1,6 +1,5 @@
 import { Room } from "@prisma/client";
 import { PubSub } from "apollo-server-express";
-import { User } from "prisma/generated/client";
 import { OutputDto } from "src/common/dtos/output.dto";
 import { UserModel } from "src/models/users.model";
 import { CreateUserInput, CreateUserOutput } from "./dtos/create-user.dto";
@@ -25,10 +24,10 @@ export declare class UsersResolver {
     isFollowing(user: UserModel, authUser: UserModel): Promise<boolean>;
     isMe({ id }: UserModel, authUser: UserModel): boolean;
     totalFollowers(user: UserModel): Promise<number>;
-    users(room: Room): Promise<import("prisma/generated/client").Room[]>;
+    users(room: Room): Promise<import("../../generated/client").Room[]>;
     totalPublish(user: UserModel): Promise<number>;
     unfollowUser(authUser: UserModel, { username }: FollowUserInput): Promise<OutputDto>;
-    myProfile(authUser: UserModel): Promise<User>;
+    myProfile(authUser: UserModel): Promise<import("../../generated/client").User>;
     ready(roomId: string): boolean;
     messageUpdate(roomId: string): AsyncIterator<unknown, any, undefined>;
     socket(payload: string): boolean;

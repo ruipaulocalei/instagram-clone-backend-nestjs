@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType, PickType } from "@nestjs/graphql";
-import { Comment } from "prisma/generated/client";
+import { Comment } from "generated/client";
 import { OutputDto } from "src/common/dtos/output.dto";
 import { CommentModel } from "src/models/comment.model";
 

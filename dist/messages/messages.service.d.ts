@@ -1,5 +1,5 @@
 import { PubSub } from 'apollo-server-express';
-import { Prisma, Room } from 'prisma/generated/client';
+import { Prisma, Room } from 'generated/client';
 import { RoomModel } from 'src/models/rooms.model';
 import { UserModel } from 'src/models/users.model';
 import { PrismaService } from 'src/prisma.service';
