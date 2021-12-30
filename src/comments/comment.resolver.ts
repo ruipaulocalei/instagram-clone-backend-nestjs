@@ -1,6 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Parent, ResolveField, Resolver } from "@nestjs/graphql";
-import { Comment, Photo, User } from "prisma/generated/client";
+import { Comment, Photo, User } from "../../generated/client";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
 import { CommentModel } from "src/models/comment.model";

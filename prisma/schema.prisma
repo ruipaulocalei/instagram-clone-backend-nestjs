@@ -1,85 +1,83 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/client"
+    provider = "prisma-client-js"
+    // output   = "./generated/client"
+    output   = "../generated/client"
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  username  String    @unique
-  email     String    @unique
-  password  String
-  bio       String?
-  avatar    String?
-  followers User[]    @relation("FollowRelation", references: [id])
-  following User[]    @relation("FollowRelation", references: [id])
-  message   Message[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  rooms     Room[]
-  photos    Photo[]
-  likes     Like[]
-  comments  Comment[]
+    id        String    @id @default(uuid())
+    name      String
+    username  String    @unique
+    email     String    @unique
+    password  String
+    bio       String?
+    avatar    String?
+    followers User[]    @relation("FollowRelation", references: [id])
+    following User[]    @relation("FollowRelation", references: [id])
+    message   Message[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    rooms     Room[]
+    photos    Photo[]
+    likes     Like[]
+    comments  Comment[]
 }
 
 model Photo {
-  id        String    @id @default(uuid())
-  file      String
-  caption   String?
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  likes     Like[]
-  comments  Comment[]
+    id        String    @id @default(uuid())
+    file      String
+    caption   String?
+    user      User      @relation(fields: [userId], references: [id])
+    userId    String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    likes     Like[]
+    comments  Comment[]
 }
 
 model Like {
-  id        String   @id @default(uuid())
-  photo     Photo    @relation(fields: [photoId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-  photoId   String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid())
+    photo     Photo    @relation(fields: [photoId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
+    photoId   String
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  @@unique([photoId, userId])
+    @@unique([photoId, userId])
 }
 
 model Room {
-  id        String    @id @default(uuid())
-  users     User[]
-  messages  Message[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+    id        String    @id @default(uuid())
+    users     User[]
+    messages  Message[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 }
 
 model Message {
-  id        String   @id @default(uuid())
-  payload   String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  room      Room?    @relation(fields: [roomId], references: [id])
-  roomId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid())
+    payload   String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    room      Room?    @relation(fields: [roomId], references: [id])
+    roomId    String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Comment {
-  id        String   @id @default(uuid())
-  payload   String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  photo     Photo    @relation(fields: [photoId], references: [id])
-  photoId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid())
+    payload   String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    photo     Photo    @relation(fields: [photoId], references: [id])
+    photoId   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

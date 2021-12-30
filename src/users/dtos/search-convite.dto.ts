@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import { User } from "prisma/generated/client";
+import { User } from "@prisma/client";
 import { OutputDto } from "src/common/dtos/output.dto";
 import { UserModel } from "src/models/users.model";
 
